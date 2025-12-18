@@ -1,4 +1,5 @@
 ﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Gmail.v1;
 using Google.Apis.Services;
 using Microsoft.Extensions.Options;
@@ -18,8 +19,34 @@ public class ImageExtractor : IImageExtractor
 
     public async Task<GmailService> StartService()
     {
-        var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync
-            (
+        UserCredential credential;
+
+        if (!string.IsNullOrEmpty(_settings.RefreshToken))
+        {
+            var token = new Google.Apis.Auth.OAuth2.Responses.TokenResponse
+            {
+                RefreshToken = _settings.RefreshToken
+            };
+
+            credential = new UserCredential(
+                new GoogleAuthorizationCodeFlow(
+                    new GoogleAuthorizationCodeFlow.Initializer
+                    {
+                        ClientSecrets = new ClientSecrets
+                        {
+                            ClientId = _settings.ClientId,
+                            ClientSecret = _settings.ClientSecret
+                        },
+                        Scopes = new[] { GmailService.Scope.GmailReadonly }
+                    }
+                ),
+                "user",
+                token
+            );
+        }
+        else
+        {
+            credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
                 new ClientSecrets
                 {
                     ClientId = _settings.ClientId,
@@ -29,6 +56,7 @@ public class ImageExtractor : IImageExtractor
                 "user",
                 CancellationToken.None
             );
+        }
 
         var service = new GmailService(new BaseClientService.Initializer()
         {
