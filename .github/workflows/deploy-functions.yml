@@ -1,0 +1,44 @@
+name: Deploy Azure Functions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Functions/**'
+      - 'Shared/**'
+      - '.github/workflows/deploy-functions.yml'
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  AZURE_FUNCTIONAPP_NAME: 'imageingest'
+  DOTNET_VERSION: '10.0.x'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore Functions/ML-Wildboar.ImageIngest/ML-Wildboar.ImageIngest.csproj
+
+    - name: Build
+      run: dotnet build Functions/ML-Wildboar.ImageIngest/ML-Wildboar.ImageIngest.csproj --configuration Release --no-restore
+
+    - name: Publish
+      run: dotnet publish Functions/ML-Wildboar.ImageIngest/ML-Wildboar.ImageIngest.csproj --configuration Release --output ./output
+
+    - name: Deploy to Azure Functions
+      uses: Azure/functions-action@v1
+      with:
+        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+        package: ./output
+        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
