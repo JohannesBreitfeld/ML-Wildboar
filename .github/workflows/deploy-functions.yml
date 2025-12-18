@@ -8,37 +8,46 @@ on:
       - 'Functions/**'
       - 'Shared/**'
       - '.github/workflows/deploy-functions.yml'
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_NAME: 'imageingest'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'Functions/ML-Wildboar.ImageIngest'
   DOTNET_VERSION: '10.0.x'
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
-    - name: Checkout code
+    - name: 'Checkout GitHub Action'
       uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Restore dependencies
-      run: dotnet restore Functions/ML-Wildboar.ImageIngest/ML-Wildboar.ImageIngest.csproj
+    - name: 'Resolve Project Dependencies Using Dotnet'
+      shell: pwsh
+      run: |
+        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+        dotnet build --configuration Release --output ./output
+        popd
 
-    - name: Build
-      run: dotnet build Functions/ML-Wildboar.ImageIngest/ML-Wildboar.ImageIngest.csproj --configuration Release --no-restore
-
-    - name: Publish
-      run: dotnet publish Functions/ML-Wildboar.ImageIngest/ML-Wildboar.ImageIngest.csproj --configuration Release --output ./output
-
-    - name: Deploy to Azure Functions
-      uses: Azure/functions-action@v1
+    - name: Login to Azure
+      uses: azure/login@v2
       with:
-        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-        package: ./output
-        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+        client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_9CCEC82AA17E46E3AF4C4C259F3CAE5B }}
+        tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E3BD623BF04F44A488649570E35DD765 }}
+        subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1A9569EB2A0645D086A35DD25A48382B }}
+
+    - name: 'Run Azure Functions Action'
+      uses: Azure/functions-action@v1
+      id: fa
+      with:
+        app-name: 'imageingest'
+        slot-name: 'Production'
+        package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
