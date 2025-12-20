@@ -8,14 +8,7 @@ using ML_Wildboar.Shared.Storage.Extensions;
 
 var builder = FunctionsApplication.CreateBuilder(args);
 
-builder.Configuration.AddAzureKeyVaultIfConfigured();
-
-// DEBUG: Log configuration values
-Console.WriteLine("=== Configuration Debug ===");
-Console.WriteLine($"KeyVaultUri: {builder.Configuration["KeyVaultUri"]}");
-Console.WriteLine($"AzureStorage--ConnectionString: {(string.IsNullOrEmpty(builder.Configuration["AzureStorage--ConnectionString"]) ? "EMPTY/NULL" : "HAS VALUE")}");
-Console.WriteLine($"AzureStorage:ConnectionString: {(string.IsNullOrEmpty(builder.Configuration["AzureStorage:ConnectionString"]) ? "EMPTY/NULL" : "HAS VALUE")}");
-Console.WriteLine("========================");
+builder.Configuration.AddAzureKeyVault();
 
 builder.ConfigureFunctionsWebApplication();
 

@@ -1,9 +1,9 @@
 <Solution>
-  <Folder Name="/Console/">
-    <Project Path="Console/ML-Wildboar.MLProcessor/ML-Wildboar.MLProcessor.csproj" />
-  </Folder>
   <Folder Name="/Functions/">
     <Project Path="Functions/ML-Wildboar.ImageIngest/ML-Wildboar.ImageIngest.csproj" />
+  </Folder>
+  <Folder Name="/ImageProcessing/">
+    <Project Path="ImageProcessing/ML-Wildboar.ImageProcessor.csproj" />
   </Folder>
   <Folder Name="/Shared/">
     <Project Path="Shared/ML-Wildboar.Shared.Core/ML-Wildboar.Shared.Core.csproj" />

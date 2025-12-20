@@ -11,7 +11,6 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<GmailSettings>(options =>
         {
-            // Key Vault secrets use -- in their names, but KeyVaultSecretManager converts them to : in configuration
             options.ClientId = configuration["Gmail:ClientId"] ?? string.Empty;
             options.ClientSecret = configuration["Gmail:ClientSecret"] ?? string.Empty;
             options.RefreshToken = configuration["Gmail:RefreshToken"];

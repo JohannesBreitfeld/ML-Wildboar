@@ -71,4 +71,48 @@ public class ImageRepository : IImageRepository
 
         await _tableClient.UpsertEntityAsync(record);
     }
+
+    /// <inheritdoc />
+    public async Task<List<ImageRecord>> GetUnprocessedImagesAsync()
+    {
+        await _tableClient.CreateIfNotExistsAsync();
+
+        var unprocessedImages = new List<ImageRecord>();
+
+        // Query for records where IsProcessed = false
+        var query = _tableClient.QueryAsync<ImageRecord>(
+            filter: $"IsProcessed eq false"
+        );
+
+        await foreach (var record in query)
+        {
+            unprocessedImages.Add(record);
+        }
+
+        return unprocessedImages;
+    }
+
+    /// <inheritdoc />
+    public async Task<byte[]> DownloadImageFromBlobAsync(string blobUrl)
+    {
+        // Extract blob name from URL
+        var uri = new Uri(blobUrl);
+        var blobName = uri.Segments[^1]; // Last segment is the blob name
+
+        var blobClient = _blobContainerClient.GetBlobClient(blobName);
+
+        using var memoryStream = new MemoryStream();
+        await blobClient.DownloadToAsync(memoryStream);
+
+        return memoryStream.ToArray();
+    }
+
+    /// <inheritdoc />
+    public async Task UpdateImageRecordAsync(ImageRecord record)
+    {
+        await _tableClient.CreateIfNotExistsAsync();
+
+        // Use UpsertEntity with Merge mode to update existing entity
+        await _tableClient.UpsertEntityAsync(record, TableUpdateMode.Merge);
+    }
 }

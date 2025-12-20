@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ML-Wildboar.ImageProcessor": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
