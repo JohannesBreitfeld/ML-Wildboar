@@ -56,7 +56,8 @@ public class ImageRepository : IImageRepository
     {
         await _blobContainerClient.CreateIfNotExistsAsync();
 
-        var blobClient = _blobContainerClient.GetBlobClient($"{imageId}.jpg");
+        var imageIdWithoutExtension = Path.GetFileNameWithoutExtension(imageId);
+        var blobClient = _blobContainerClient.GetBlobClient($"{imageIdWithoutExtension}.jpg");
 
         using var stream = new MemoryStream(imageData);
         await blobClient.UploadAsync(stream, overwrite: true);
