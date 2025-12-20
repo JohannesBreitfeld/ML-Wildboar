@@ -505,3 +505,7 @@ credentials.json
 # Gmail API credentials
 **/gmail_credentials.json
 nul
+
+# ML Training and testing image data
+**/Data/Training/
+**/Data/Testing/

@@ -76,14 +76,14 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Registers the IImageRepository implementation as a scoped service.
+    /// Registers the IImageRepository implementation as a singleton service.
     /// Requires Azure Storage clients to be registered first.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddImageRepository(this IServiceCollection services)
     {
-        services.AddScoped<IImageRepository>(sp =>
+        services.AddSingleton<IImageRepository>(sp =>
         {
             var tableServiceClient = sp.GetRequiredService<TableServiceClient>();
             var blobServiceClient = sp.GetRequiredService<BlobServiceClient>();

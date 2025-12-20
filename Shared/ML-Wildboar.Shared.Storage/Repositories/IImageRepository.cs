@@ -26,4 +26,23 @@ public interface IImageRepository
     /// </summary>
     /// <param name="record">The image record to save.</param>
     Task SaveImageRecordAsync(ImageRecord record);
+
+    /// <summary>
+    /// Gets all unprocessed image records from Azure Table Storage.
+    /// </summary>
+    /// <returns>A list of image records where IsProcessed is false.</returns>
+    Task<List<ImageRecord>> GetUnprocessedImagesAsync();
+
+    /// <summary>
+    /// Downloads image data from Azure Blob Storage.
+    /// </summary>
+    /// <param name="blobUrl">The full URL of the blob to download.</param>
+    /// <returns>The image data as a byte array.</returns>
+    Task<byte[]> DownloadImageFromBlobAsync(string blobUrl);
+
+    /// <summary>
+    /// Updates an existing image record in Azure Table Storage.
+    /// </summary>
+    /// <param name="record">The image record to update.</param>
+    Task UpdateImageRecordAsync(ImageRecord record);
 }
