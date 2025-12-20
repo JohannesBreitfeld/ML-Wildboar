@@ -34,7 +34,7 @@ if (!File.Exists(modelPath))
 builder.Services.AddPredictionEnginePool<MLModel.ModelInput, MLModel.ModelOutput>()
     .FromFile(modelPath);
 
-builder.Services.AddScoped<IImageProcessingService, ImageProcessingService>();
+builder.Services.AddSingleton<IImageProcessingService, ImageProcessingService>();
 builder.Services.AddHostedService<Worker>();
 
 var host = builder.Build();
