@@ -38,7 +38,6 @@ public class ImageProcessingService : IImageProcessingService
 
         try
         {
-            // Get all unprocessed images
             _logger.LogInformation("Querying for unprocessed images...");
             var unprocessedImages = await _imageRepository.GetUnprocessedImagesAsync();
             stats.TotalImages = unprocessedImages.Count;
@@ -51,15 +50,8 @@ public class ImageProcessingService : IImageProcessingService
                 return stats;
             }
 
-            // Process each image with retry logic
             foreach (var imageRecord in unprocessedImages)
             {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    _logger.LogWarning("Processing cancelled by user.");
-                    break;
-                }
-
                 var success = await ProcessImageWithRetryAsync(imageRecord, stats, cancellationToken);
 
                 if (success)
@@ -126,7 +118,6 @@ public class ImageProcessingService : IImageProcessingService
                     "Failed to process image {RowKey} (attempt {Attempt}/{Max}): {Message}",
                     imageRecord.RowKey, attempt + 1, _settings.MaxRetries + 1, ex.Message);
 
-                // Track error type
                 var errorType = ex.GetType().Name;
                 if (stats.ErrorCounts.TryGetValue(errorType, out var count))
                 {
@@ -144,7 +135,6 @@ public class ImageProcessingService : IImageProcessingService
                     "Failed to process image {RowKey} after {Attempts} attempts: {Message}",
                     imageRecord.RowKey, _settings.MaxRetries + 1, ex.Message);
 
-                // Track final error
                 var errorType = ex.GetType().Name;
                 if (stats.ErrorCounts.TryGetValue(errorType, out var count))
                 {
@@ -167,13 +157,11 @@ public class ImageProcessingService : IImageProcessingService
         ProcessingStatistics stats,
         CancellationToken cancellationToken)
     {
-        // Download image from blob storage
         _logger.LogDebug("Downloading image {RowKey} from {BlobUrl}",
             imageRecord.RowKey, imageRecord.BlobStorageUrl);
 
         var imageBytes = await _imageRepository.DownloadImageFromBlobAsync(imageRecord.BlobStorageUrl);
 
-        // Run through ML model
         var input = new MLModel.ModelInput
         {
             ImageSource = imageBytes
@@ -181,18 +169,14 @@ public class ImageProcessingService : IImageProcessingService
 
         var prediction = _predictionEnginePool.Predict(input);
 
-        // Extract confidence score for predicted label
         var labelScores = MLModel.GetSortedScoresWithLabels(prediction);
         var topPrediction = labelScores.First();
 
-        // Update image record
         imageRecord.IsProcessed = true;
-        imageRecord.ContainsWildboar = prediction.PredictedLabel.Equals(
-            "wildboar",
-            StringComparison.OrdinalIgnoreCase);
+        var isWildboarPrediction = prediction.PredictedLabel.Equals("wildboar", StringComparison.OrdinalIgnoreCase);
+        imageRecord.ContainsWildboar = isWildboarPrediction && topPrediction.Value >=_settings.ConfidenceThreshold;
         imageRecord.ConfidenceScore = topPrediction.Value;
 
-        // Save updated record
         await _imageRepository.UpdateImageRecordAsync(imageRecord);
 
         if (imageRecord.ContainsWildboar == true)
