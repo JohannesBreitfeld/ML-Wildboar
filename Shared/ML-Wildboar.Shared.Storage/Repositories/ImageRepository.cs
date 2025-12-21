@@ -1,5 +1,6 @@
 using Azure.Data.Tables;
 using Azure.Storage.Blobs;
+using Azure.Storage.Sas;
 using ML_Wildboar.Shared.Storage.Entities;
 
 namespace ML_Wildboar.Shared.Storage.Repositories;
@@ -114,5 +115,151 @@ public class ImageRepository : IImageRepository
 
         // Use UpsertEntity with Merge mode to update existing entity
         await _tableClient.UpsertEntityAsync(record, TableUpdateMode.Merge);
+    }
+
+    /// <inheritdoc />
+    public async Task<List<ImageRecord>> GetImagesByDateRangeAsync(
+        DateTime startDate,
+        DateTime endDate,
+        bool? containsWildboar = null,
+        double? minConfidence = null)
+    {
+        await _tableClient.CreateIfNotExistsAsync();
+
+        var results = new List<ImageRecord>();
+
+        // Query each date partition in the range
+        for (var date = startDate.Date; date <= endDate.Date; date = date.AddDays(1))
+        {
+            var partitionKey = date.ToString("yyyy-MM-dd");
+
+            // Build filter for this partition
+            var filter = $"PartitionKey eq '{partitionKey}'";
+
+            if (containsWildboar.HasValue)
+            {
+                filter += $" and ContainsWildboar eq {containsWildboar.Value.ToString().ToLower()}";
+            }
+
+            if (minConfidence.HasValue)
+            {
+                filter += $" and ConfidenceScore ge {minConfidence.Value}";
+            }
+
+            var query = _tableClient.QueryAsync<ImageRecord>(filter: filter);
+
+            await foreach (var record in query)
+            {
+                // Additional time filtering for start/end dates
+                if (record.CapturedAt >= startDate && record.CapturedAt <= endDate)
+                {
+                    results.Add(record);
+                }
+            }
+        }
+
+        return results.OrderBy(r => r.CapturedAt).ToList();
+    }
+
+    /// <inheritdoc />
+    public async Task<(List<ImageRecord> Records, string? ContinuationToken)> GetImagesByDateAsync(
+        string partitionKey,
+        int? startHour = null,
+        int? endHour = null,
+        bool? containsWildboar = null,
+        int pageSize = 50,
+        string? continuationToken = null)
+    {
+        await _tableClient.CreateIfNotExistsAsync();
+
+        var results = new List<ImageRecord>();
+
+        // Build filter for partition
+        var filter = $"PartitionKey eq '{partitionKey}'";
+
+        if (containsWildboar.HasValue)
+        {
+            filter += $" and ContainsWildboar eq {containsWildboar.Value.ToString().ToLower()}";
+        }
+
+        // Query with pagination
+        var pages = _tableClient.QueryAsync<ImageRecord>(
+            filter: filter,
+            maxPerPage: pageSize
+        ).AsPages(continuationToken);
+
+        await foreach (var page in pages)
+        {
+            foreach (var record in page.Values)
+            {
+                // Apply hour filtering if specified
+                if (startHour.HasValue && record.CapturedAt.Hour < startHour.Value)
+                    continue;
+
+                if (endHour.HasValue && record.CapturedAt.Hour > endHour.Value)
+                    continue;
+
+                results.Add(record);
+            }
+
+            // Return first page with continuation token
+            var nextToken = page.ContinuationToken;
+            return (results, nextToken);
+        }
+
+        return (results, null);
+    }
+
+    /// <inheritdoc />
+    public async Task<string> GetBlobSasUrlAsync(string blobUrl, int expiryMinutes = 60)
+    {
+        // Extract blob name from URL
+        var uri = new Uri(blobUrl);
+        var blobName = uri.Segments[^1]; // Last segment is the blob name
+
+        var blobClient = _blobContainerClient.GetBlobClient(blobName);
+
+        // Check if the blob client can generate SAS tokens (requires account key)
+        if (!blobClient.CanGenerateSasUri)
+        {
+            // If using managed identity or SAS-based auth, return original URL
+            // In production, you might want to use user delegation SAS
+            return blobUrl;
+        }
+
+        // Generate SAS token with read permissions
+        var sasBuilder = new BlobSasBuilder
+        {
+            BlobContainerName = _blobContainerClient.Name,
+            BlobName = blobName,
+            Resource = "b", // b = blob
+            StartsOn = DateTimeOffset.UtcNow.AddMinutes(-5), // Allow 5 min clock skew
+            ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(expiryMinutes)
+        };
+
+        sasBuilder.SetPermissions(BlobSasPermissions.Read);
+
+        var sasUri = blobClient.GenerateSasUri(sasBuilder);
+        return sasUri.ToString();
+    }
+
+    /// <inheritdoc />
+    public async Task<Dictionary<DateTime, int>> GetDetectionCountsByHourAsync(
+        DateTime startDate,
+        DateTime endDate,
+        double? minConfidence = null)
+    {
+        var records = await GetImagesByDateRangeAsync(
+            startDate,
+            endDate,
+            containsWildboar: true, // Only count detected wildboars
+            minConfidence: minConfidence);
+
+        // Group by hour and count
+        var countsByHour = records
+            .GroupBy(r => new DateTime(r.CapturedAt.Year, r.CapturedAt.Month, r.CapturedAt.Day, r.CapturedAt.Hour, 0, 0))
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        return countsByHour;
     }
 }
