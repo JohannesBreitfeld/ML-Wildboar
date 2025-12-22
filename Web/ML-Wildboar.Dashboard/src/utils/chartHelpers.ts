@@ -20,9 +20,17 @@ export function processDetectionDataByDay(
   const dailyMap = new Map<string, number>();
 
   // Aggregate detections by day
+  if (!detections || !Array.isArray(detections)) {
+    return [];
+  }
+
   detections.forEach((d) => {
     const date = new Date(d.timestamp);
-    const dateKey = date.toISOString().split('T')[0];
+    // Use local time (CET) to match backend partition keys
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateKey = `${year}-${month}-${day}`;
     dailyMap.set(dateKey, (dailyMap.get(dateKey) || 0) + d.count);
   });
 
@@ -56,6 +64,19 @@ export function processDetectionDataByHour(
   }
 
   // Aggregate detections by hour
+  if (!detections || !Array.isArray(detections)) {
+    // Return empty hours if no data
+    const chartData: HourlyChartData[] = [];
+    hourlyMap.forEach((count, hour) => {
+      chartData.push({
+        hour,
+        hourLabel: `${String(hour).padStart(2, '0')}:00`,
+        count: 0,
+      });
+    });
+    return chartData;
+  }
+
   detections.forEach((d) => {
     const date = new Date(d.timestamp);
     const hour = date.getHours();

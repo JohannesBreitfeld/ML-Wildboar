@@ -3,6 +3,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using ML_Wildboar.Functions.Dashboard.Models;
 using ML_Wildboar.Shared.Storage.Repositories;
+using System.Globalization;
 using System.Net;
 
 namespace ML_Wildboar.Functions.Dashboard.Functions;
@@ -30,7 +31,7 @@ public class GetImageSasToken(IImageRepository imageRepository, ILogger<GetImage
                 return badRequest;
             }
 
-            var expiryMinutes = string.IsNullOrEmpty(expiryMinutesStr) ? 60 : int.Parse(expiryMinutesStr);
+            var expiryMinutes = string.IsNullOrEmpty(expiryMinutesStr) ? 60 : int.Parse(expiryMinutesStr, CultureInfo.InvariantCulture);
 
             // Limit expiry to max 24 hours
             expiryMinutes = Math.Min(expiryMinutes, 1440);

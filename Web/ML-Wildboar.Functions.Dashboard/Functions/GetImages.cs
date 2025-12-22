@@ -3,6 +3,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using ML_Wildboar.Functions.Dashboard.Models;
 using ML_Wildboar.Shared.Storage.Repositories;
+using System.Globalization;
 using System.Net;
 
 namespace ML_Wildboar.Functions.Dashboard.Functions;
@@ -37,10 +38,10 @@ public class GetImages(IImageRepository imageRepository, ILogger<GetImages> logg
             }
 
             // Parse optional parameters
-            int? startHour = string.IsNullOrEmpty(startHourStr) ? null : int.Parse(startHourStr);
-            int? endHour = string.IsNullOrEmpty(endHourStr) ? null : int.Parse(endHourStr);
+            int? startHour = string.IsNullOrEmpty(startHourStr) ? null : int.Parse(startHourStr, CultureInfo.InvariantCulture);
+            int? endHour = string.IsNullOrEmpty(endHourStr) ? null : int.Parse(endHourStr, CultureInfo.InvariantCulture);
             bool? containsWildboar = string.IsNullOrEmpty(containsWildboarStr) ? null : bool.Parse(containsWildboarStr);
-            int pageSize = string.IsNullOrEmpty(pageSizeStr) ? 50 : int.Parse(pageSizeStr);
+            int pageSize = string.IsNullOrEmpty(pageSizeStr) ? 50 : int.Parse(pageSizeStr, CultureInfo.InvariantCulture);
 
             // Limit page size
             pageSize = Math.Min(pageSize, 100);
@@ -58,7 +59,7 @@ public class GetImages(IImageRepository imageRepository, ILogger<GetImages> logg
             // Filter by confidence if specified
             if (!string.IsNullOrEmpty(minConfidenceStr))
             {
-                var minConfidence = double.Parse(minConfidenceStr);
+                var minConfidence = double.Parse(minConfidenceStr, CultureInfo.InvariantCulture);
                 records = records.Where(r => (r.ConfidenceScore ?? 0) >= minConfidence).ToList();
             }
 

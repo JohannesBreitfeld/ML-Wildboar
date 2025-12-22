@@ -5,6 +5,7 @@ export interface DetectionDataResponse {
   totalImages: number;
   wildboarImages: number;
   dateRange: DateRange;
+  totalImagesByDay: Record<string, number>;
 }
 
 export interface DetectionDataPoint {

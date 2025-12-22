@@ -13,7 +13,7 @@ import { DailyChartData } from '../../utils/chartHelpers';
 
 interface DailyDetectionChartProps {
   data: DailyChartData[];
-  onDayClick?: (date: string) => void;
+  onDayClick?: (date: string, containsWildboar?: boolean) => void;
 }
 
 const CustomTooltip = (props: any) => {
@@ -34,13 +34,13 @@ const CustomTooltip = (props: any) => {
       >
         <p style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>{label}</p>
         <p style={{ margin: '0', color: '#00C853' }}>
-          Wildboar: {wildboar}
+          Vildsvin: {wildboar}
         </p>
         <p style={{ margin: '5px 0 0 0', color: '#594AE2' }}>
-          No Wildboar: {noWildboar}
+          Inte vildsvin: {noWildboar}
         </p>
         <p style={{ margin: '5px 0 0 0', borderTop: '1px solid #eee', paddingTop: '5px' }}>
-          Total: {total}
+          Totalt: {total}
         </p>
       </div>
     );
@@ -52,37 +52,54 @@ export function DailyDetectionChart({
   data,
   onDayClick,
 }: DailyDetectionChartProps) {
-  const handleClick = (data: any) => {
-    if (data && data.activePayload && data.activePayload.length > 0) {
-      const point = data.activePayload[0].payload as DailyChartData;
-      onDayClick?.(point.date);
+  const safeData = data || [];
+
+  const handleWildboarBarClick = (data: any) => {
+    if (data && data.date) {
+      onDayClick?.(data.date, true);
+    }
+  };
+
+  const handleNoWildboarBarClick = (data: any) => {
+    if (data && data.date) {
+      onDayClick?.(data.date, false);
     }
   };
 
   return (
     <div style={{ width: '100%', height: '300px' }}>
       <h3 style={{ textAlign: 'center', marginBottom: '1rem' }}>
-        Images Per Day
+        Bilder per dag
       </h3>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={data}
-          onClick={handleClick}
-          style={{ cursor: onDayClick ? 'pointer' : 'default' }}
-        >
+        <BarChart data={safeData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="dateLabel"
             tick={{ fontSize: 12 }}
-            angle={data.length > 14 ? -45 : 0}
-            textAnchor={data.length > 14 ? 'end' : 'middle'}
-            height={data.length > 14 ? 80 : 60}
+            angle={safeData.length > 14 ? -45 : 0}
+            textAnchor={safeData.length > 14 ? 'end' : 'middle'}
+            height={safeData.length > 14 ? 80 : 60}
           />
-          <YAxis label={{ value: 'Images', angle: -90, position: 'insideLeft' }} />
+          <YAxis label={{ value: 'Bilder', angle: -90, position: 'insideLeft' }} />
           <Tooltip content={<CustomTooltip />} />
           <Legend />
-          <Bar dataKey="wildboar" stackId="a" fill="#00C853" name="Wildboar" />
-          <Bar dataKey="noWildboar" stackId="a" fill="#594AE2" name="No Wildboar" />
+          <Bar
+            dataKey="wildboar"
+            stackId="a"
+            fill="#00C853"
+            name="Vildsvin"
+            onClick={handleWildboarBarClick}
+            cursor="pointer"
+          />
+          <Bar
+            dataKey="noWildboar"
+            stackId="a"
+            fill="#594AE2"
+            name="Inte vildsvin"
+            onClick={handleNoWildboarBarClick}
+            cursor="pointer"
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>

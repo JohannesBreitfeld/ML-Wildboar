@@ -57,7 +57,7 @@ public class ImageRepository : IImageRepository
     {
         await _blobContainerClient.CreateIfNotExistsAsync();
 
-        var blobClient = _blobContainerClient.GetBlobClient($"{imageId}.jpg");
+        var blobClient = _blobContainerClient.GetBlobClient(imageId);
 
         using var stream = new MemoryStream(imageData);
         await blobClient.UploadAsync(stream, overwrite: true);
@@ -133,7 +133,6 @@ public class ImageRepository : IImageRepository
         {
             var partitionKey = date.ToString("yyyy-MM-dd");
 
-            // Build filter for this partition
             var filter = $"PartitionKey eq '{partitionKey}'";
 
             if (containsWildboar.HasValue)
@@ -143,14 +142,13 @@ public class ImageRepository : IImageRepository
 
             if (minConfidence.HasValue)
             {
-                filter += $" and ConfidenceScore ge {minConfidence.Value}";
+                filter += $" and ConfidenceScore ge {minConfidence.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
             }
 
             var query = _tableClient.QueryAsync<ImageRecord>(filter: filter);
 
             await foreach (var record in query)
             {
-                // Additional time filtering for start/end dates
                 if (record.CapturedAt >= startDate && record.CapturedAt <= endDate)
                 {
                     results.Add(record);
@@ -219,11 +217,9 @@ public class ImageRepository : IImageRepository
 
         var blobClient = _blobContainerClient.GetBlobClient(blobName);
 
-        // Check if the blob client can generate SAS tokens (requires account key)
+        // Check if the blob client can generate SAS tokens 
         if (!blobClient.CanGenerateSasUri)
         {
-            // If using managed identity or SAS-based auth, return original URL
-            // In production, you might want to use user delegation SAS
             return blobUrl;
         }
 
@@ -252,7 +248,7 @@ public class ImageRepository : IImageRepository
         var records = await GetImagesByDateRangeAsync(
             startDate,
             endDate,
-            containsWildboar: true, // Only count detected wildboars
+            containsWildboar: true, 
             minConfidence: minConfidence);
 
         // Group by hour and count

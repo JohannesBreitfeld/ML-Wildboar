@@ -24,16 +24,16 @@ export function ImageThumbnail({ image, onClick }: ImageThumbnailProps) {
     <div className="image-thumbnail" onClick={onClick}>
       <div className="thumbnail-image-container">
         {!imageLoaded && !imageError && (
-          <div className="thumbnail-loading">Loading...</div>
+          <div className="thumbnail-loading">Hämtar...</div>
         )}
         {imageError ? (
           <div className="thumbnail-error">
-            <span>Failed to load</span>
+            <span>Misslyckades att ladda</span>
           </div>
         ) : (
           <img
             src={image.imageUrl}
-            alt={`Captured at ${formatDateTime(new Date(image.capturedAt))}`}
+            alt={`Tagen: ${formatDateTime(new Date(image.capturedAt))}`}
             onLoad={handleImageLoad}
             onError={handleImageError}
             style={{ display: imageLoaded ? 'block' : 'none' }}
@@ -41,7 +41,7 @@ export function ImageThumbnail({ image, onClick }: ImageThumbnailProps) {
         )}
         {image.containsWildboar && (
           <div className="wildboar-badge">
-            <span>🐗 Wildboar</span>
+            <span>🐗 Vildsvin</span>
           </div>
         )}
       </div>

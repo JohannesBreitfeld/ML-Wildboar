@@ -40,10 +40,10 @@ const CustomTooltip = (props: any) => {
           {data.displayTime}
         </p>
         <p style={{ margin: '0', color: '#00C853' }}>
-          Detections: {data.count}
+          Bekräftade vildsin: {data.count}
         </p>
         <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '0.9em' }}>
-          Avg Confidence: {(data.confidence * 100).toFixed(1)}%
+          Genomsnittligt Confidence: {(data.confidence * 100).toFixed(1)}%
         </p>
       </div>
     );
@@ -55,31 +55,20 @@ export function DetectionTimeSeriesChart({
   data,
   onPointClick,
 }: DetectionTimeSeriesChartProps) {
-  const chartData: ChartDataPoint[] = data.map((d) => ({
+  const chartData: ChartDataPoint[] = (data || []).map((d) => ({
     timestamp: d.timestamp,
     displayTime: formatDateTime(new Date(d.timestamp)),
     count: d.count,
     confidence: d.averageConfidence,
   }));
 
-  const handleClick = (data: any) => {
-    if (data && data.activePayload && data.activePayload.length > 0) {
-      const point = data.activePayload[0].payload as ChartDataPoint;
-      onPointClick?.(point.timestamp);
-    }
-  };
-
   return (
     <div style={{ width: '100%', height: '300px' }}>
       <h3 style={{ textAlign: 'center', marginBottom: '1rem' }}>
-        Wildboar Detections Over Time
+        Detekterade vildsvin över tid
       </h3>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
-          data={chartData}
-          onClick={handleClick}
-          style={{ cursor: onPointClick ? 'pointer' : 'default' }}
-        >
+        <AreaChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="displayTime"
@@ -87,7 +76,7 @@ export function DetectionTimeSeriesChart({
             interval="preserveStartEnd"
           />
           <YAxis
-            label={{ value: 'Detections', angle: -90, position: 'insideLeft' }}
+            label={{ value: 'Detektioner', angle: -90, position: 'insideLeft' }}
           />
           <Tooltip content={<CustomTooltip />} />
           <Area
@@ -96,6 +85,7 @@ export function DetectionTimeSeriesChart({
             stroke="#00C853"
             fill="#00C853"
             fillOpacity={0.6}
+            activeDot={{ r: 6 }}
           />
         </AreaChart>
       </ResponsiveContainer>

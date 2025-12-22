@@ -4,7 +4,8 @@ public record DetectionDataResponse(
     List<DetectionDataPoint> Detections,
     int TotalImages,
     int WildboarImages,
-    DateRange DateRange
+    DateRange DateRange,
+    Dictionary<string, int> TotalImagesByDay
 );
 
 public record DetectionDataPoint(

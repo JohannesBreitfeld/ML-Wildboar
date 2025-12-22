@@ -34,8 +34,5 @@
     ".woff2": "font/woff2",
     ".ttf": "font/ttf",
     ".eot": "application/vnd.ms-fontobject"
-  },
-  "platform": {
-    "apiRuntime": "dotnet-isolated:10.0"
   }
 }

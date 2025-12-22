@@ -22,7 +22,6 @@ export function ImageLightbox({
 }: ImageLightboxProps) {
   const currentImage = images[currentIndex];
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -38,7 +37,6 @@ export function ImageLightbox({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose, onPrevious, onNext]);
 
-  // Prepare slides for lightbox
   const slides = images.map((image) => ({
     src: image.imageUrl,
     alt: `Captured at ${formatDateTime(new Date(image.capturedAt))}`,
@@ -52,7 +50,6 @@ export function ImageLightbox({
       slides={slides}
       on={{
         view: ({ index }) => {
-          // Update current index when user navigates
           if (index !== currentIndex) {
             if (index > currentIndex) {
               onNext();
@@ -63,7 +60,6 @@ export function ImageLightbox({
         },
       }}
       render={{
-        // Custom slide footer with metadata
         slideFooter: () => {
           if (!currentImage) return null;
 
@@ -71,7 +67,7 @@ export function ImageLightbox({
             <div className="lightbox-footer">
               <div className="lightbox-metadata">
                 <div className="metadata-row">
-                  <span className="metadata-label">Captured:</span>
+                  <span className="metadata-label">Tagen:</span>
                   <span className="metadata-value">
                     {formatDateTime(new Date(currentImage.capturedAt))}
                   </span>
@@ -81,7 +77,7 @@ export function ImageLightbox({
                     <div className="metadata-row">
                       <span className="metadata-label">Detection:</span>
                       <span className="metadata-value wildboar-detected">
-                        🐗 Wildboar Detected
+                        🐗 Vildsvin upptäckt
                       </span>
                     </div>
                     <div className="metadata-row">

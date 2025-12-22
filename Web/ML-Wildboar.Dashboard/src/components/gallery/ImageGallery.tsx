@@ -32,7 +32,7 @@ export function ImageGallery({ images, loading }: ImageGalleryProps) {
     return (
       <div className="image-gallery-loading">
         <div className="loading-spinner"></div>
-        <p>Loading images...</p>
+        <p>Laddar bilder...</p>
       </div>
     );
   }
@@ -40,8 +40,8 @@ export function ImageGallery({ images, loading }: ImageGalleryProps) {
   if (images.length === 0) {
     return (
       <div className="image-gallery-empty">
-        <p>No images found for the selected date and filters.</p>
-        <small>Try selecting a different date or adjusting your filters.</small>
+        <p>Inga bilder hittades för det valda datumet och filtren.</p>
+        <small>Försök att välja ett annat datum eller justera dina filter.</small>
       </div>
     );
   }
@@ -50,7 +50,7 @@ export function ImageGallery({ images, loading }: ImageGalleryProps) {
     <>
       <div className="image-gallery">
         <div className="gallery-header">
-          <h3>Images ({images.length})</h3>
+          <h3>Bilder ({images.length})</h3>
         </div>
         <div className="gallery-grid">
           {images.map((image, index) => (

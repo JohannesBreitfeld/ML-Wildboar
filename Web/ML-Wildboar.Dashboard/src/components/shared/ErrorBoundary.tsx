@@ -39,7 +39,7 @@ export class ErrorBoundary extends Component<Props, State> {
           borderRadius: '8px',
           margin: '2rem'
         }}>
-          <h2>Something went wrong</h2>
+          <h2>Något gick fel</h2>
           <details style={{ whiteSpace: 'pre-wrap', marginTop: '1rem' }}>
             {this.state.error?.toString()}
           </details>
@@ -55,7 +55,7 @@ export class ErrorBoundary extends Component<Props, State> {
               cursor: 'pointer'
             }}
           >
-            Reload Page
+            Ladda om sidan
           </button>
         </div>
       );

@@ -3,6 +3,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using ML_Wildboar.Functions.Dashboard.Models;
 using ML_Wildboar.Shared.Storage.Repositories;
+using System.Globalization;
 using System.Net;
 
 namespace ML_Wildboar.Functions.Dashboard.Functions;
@@ -28,15 +29,15 @@ public class GetDetections(IImageRepository imageRepository, ILogger<GetDetectio
             // Default to last 7 days if not specified
             var endDate = string.IsNullOrEmpty(endDateStr)
                 ? DateTime.UtcNow
-                : DateTime.Parse(endDateStr);
+                : DateTime.Parse(endDateStr, CultureInfo.InvariantCulture);
 
             var startDate = string.IsNullOrEmpty(startDateStr)
                 ? endDate.AddDays(-7)
-                : DateTime.Parse(startDateStr);
+                : DateTime.Parse(startDateStr, CultureInfo.InvariantCulture);
 
             double? minConfidence = string.IsNullOrEmpty(minConfidenceStr)
                 ? null
-                : double.Parse(minConfidenceStr);
+                : double.Parse(minConfidenceStr, CultureInfo.InvariantCulture);
 
             // Get all images in range for statistics
             var allImages = await imageRepository.GetImagesByDateRangeAsync(
@@ -63,6 +64,11 @@ public class GetDetections(IImageRepository imageRepository, ILogger<GetDetectio
                 .OrderBy(d => d.Timestamp)
                 .ToList();
 
+            // Group all images by day for the daily chart
+            var totalImagesByDay = allImages
+                .GroupBy(img => img.CapturedAt.ToString("yyyy-MM-dd"))
+                .ToDictionary(g => g.Key, g => g.Count());
+
             // Create response
             var response = new DetectionDataResponse(
                 Detections: detections,
@@ -71,7 +77,8 @@ public class GetDetections(IImageRepository imageRepository, ILogger<GetDetectio
                 DateRange: new DateRange(
                     Start: startDate.ToString("yyyy-MM-dd"),
                     End: endDate.ToString("yyyy-MM-dd")
-                )
+                ),
+                TotalImagesByDay: totalImagesByDay
             );
 
             var httpResponse = req.CreateResponse(HttpStatusCode.OK);

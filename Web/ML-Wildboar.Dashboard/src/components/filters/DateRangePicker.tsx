@@ -13,14 +13,14 @@ export function DateRangePicker({
   endDate,
   onDateRangeChange,
 }: DateRangePickerProps) {
-  const [customMode, setCustomMode] = useState(false);
+  const [selectedPreset, setSelectedPreset] = useState<number | 'custom'>(7);
 
   const handlePresetClick = (days: number) => {
     const end = new Date();
     const start = new Date();
     start.setDate(start.getDate() - days);
     onDateRangeChange(start, end);
-    setCustomMode(false);
+    setSelectedPreset(days);
   };
 
   const handleCustomDateChange = (type: 'start' | 'end', value: string) => {
@@ -34,32 +34,32 @@ export function DateRangePicker({
 
   return (
     <div className="date-range-picker">
-      <h3>Date Range</h3>
+      <h3>Tidsspann</h3>
       <div className="preset-buttons">
         <button
           onClick={() => handlePresetClick(7)}
-          className={!customMode ? 'active' : ''}
+          className={selectedPreset === 7 ? 'active' : ''}
         >
-          Last 7 Days
+          Senaste 7 dagarna
         </button>
         <button
           onClick={() => handlePresetClick(30)}
-          className={!customMode ? 'active' : ''}
+          className={selectedPreset === 30 ? 'active' : ''}
         >
-          Last 30 Days
+          Senaste 30 dagarna
         </button>
         <button
-          onClick={() => setCustomMode(true)}
-          className={customMode ? 'active' : ''}
+          onClick={() => setSelectedPreset('custom')}
+          className={selectedPreset === 'custom' ? 'active' : ''}
         >
-          Custom
+          Anpassad
         </button>
       </div>
 
-      {customMode && (
+      {selectedPreset === 'custom' && (
         <div className="custom-date-inputs">
           <div className="date-input-group">
-            <label>Start Date:</label>
+            <label>Startdatum:</label>
             <input
               type="date"
               value={formatDate(startDate)}
@@ -68,7 +68,7 @@ export function DateRangePicker({
             />
           </div>
           <div className="date-input-group">
-            <label>End Date:</label>
+            <label>Slutdatum:</label>
             <input
               type="date"
               value={formatDate(endDate)}
@@ -82,7 +82,7 @@ export function DateRangePicker({
 
       <div className="date-range-display">
         <small>
-          Selected: {formatDate(startDate)} to {formatDate(endDate)}
+          Valt tidsspann: {formatDate(startDate)} till {formatDate(endDate)}
         </small>
       </div>
     </div>

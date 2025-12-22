@@ -17,6 +17,7 @@ import './Dashboard.css';
 
 export function Dashboard() {
   const { dateRange, setDateRange, selectedDate, setSelectedDate, minConfidence } = useDashboard();
+  const [showWildboarImages, setShowWildboarImages] = React.useState<boolean | undefined>(true);
 
   // Fetch detection data
   const { data, isLoading, error } = useDetectionData({
@@ -32,15 +33,16 @@ export function Dashboard() {
   } = useImageGallery(
     {
       date: selectedDate ? formatDate(selectedDate) : formatDate(new Date()),
-      containsWildboar: true, // Only show wildboar detections
+      containsWildboar: showWildboarImages,
       minConfidence,
       pageSize: 50,
     },
     !!selectedDate // Only fetch when a date is selected
   );
 
-  const handleDayClick = (date: string) => {
+  const handleDayClick = (date: string, containsWildboar?: boolean) => {
     setSelectedDate(new Date(date));
+    setShowWildboarImages(containsWildboar);
   };
 
   const handleTimeSeriesClick = (timestamp: string) => {
@@ -51,16 +53,19 @@ export function Dashboard() {
   if (error) {
     return (
       <div className="dashboard-error">
-        <h2>Error loading dashboard data</h2>
+        <h2>Fel vid inläsning av dashboard-data</h2>
         <p>{(error as Error).message}</p>
-        <button onClick={() => window.location.reload()}>Retry</button>
+        <button onClick={() => window.location.reload()}>Försök igen</button>
       </div>
     );
   }
 
   // Prepare chart data
   const dailyData = data
-    ? processDetectionDataByDay(data.detections, new Map())
+    ? processDetectionDataByDay(
+        data.detections,
+        new Map(Object.entries(data.totalImagesByDay))
+      )
     : [];
 
   const hourlyData = data ? processDetectionDataByHour(data.detections) : [];
@@ -74,20 +79,20 @@ export function Dashboard() {
       />
 
       {isLoading ? (
-        <LoadingSpinner size="large" message="Loading detection data..." />
+        <LoadingSpinner size="large" message="Hämtar vald data..." />
       ) : data ? (
         <>
           <div className="stats-summary">
             <div className="stat-card">
-              <h4>Total Images</h4>
+              <h4>Totala bilder</h4>
               <p className="stat-value">{data.totalImages}</p>
             </div>
             <div className="stat-card">
-              <h4>Wildboar Detected</h4>
+              <h4>Vildsvin upptäckta</h4>
               <p className="stat-value wildboar">{data.wildboarImages}</p>
             </div>
             <div className="stat-card">
-              <h4>Detection Rate</h4>
+              <h4>Detektionsfrekvens</h4>
               <p className="stat-value">
                 {data.totalImages > 0
                   ? ((data.wildboarImages / data.totalImages) * 100).toFixed(1)
@@ -117,12 +122,17 @@ export function Dashboard() {
           {selectedDate && (
             <div className="gallery-section">
               <div className="gallery-header-info">
-                <h2>Images for {formatDate(selectedDate)}</h2>
+                <h2>
+                  {showWildboarImages === true && 'Vildsvin Bilder för '}
+                  {showWildboarImages === false && 'Övriga bilder för '}
+                  {showWildboarImages === undefined && 'Alla bilder för '}
+                  {formatDate(selectedDate)}
+                </h2>
                 <button
                   className="clear-selection-btn"
                   onClick={() => setSelectedDate(null)}
                 >
-                  Clear Selection
+                  Rensa val för bildvisning
                 </button>
               </div>
               <ImageGallery
@@ -134,7 +144,7 @@ export function Dashboard() {
         </>
       ) : (
         <div className="no-data">
-          <p>No detection data available for the selected date range.</p>
+          <p>Ingen detektionsdata tillgänglig för det valda datumintervallet.</p>
         </div>
       )}
     </div>

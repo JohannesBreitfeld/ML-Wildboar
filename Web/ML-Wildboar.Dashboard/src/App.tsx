@@ -22,7 +22,7 @@ function App() {
         <DashboardProvider>
           <div className="App">
             <header className="App-header">
-              <h1>Wildboar Monitoring Dashboard</h1>
+              <h1>AI-Grisar</h1>
             </header>
             <main>
               <Dashboard />

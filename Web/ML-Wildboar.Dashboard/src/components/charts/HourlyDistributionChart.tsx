@@ -28,10 +28,10 @@ const CustomTooltip = (props: any) => {
         }}
       >
         <p style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>
-          Hour: {data.hourLabel}
+          Timme: {data.hourLabel}
         </p>
         <p style={{ margin: '0', color: '#00C853' }}>
-          Detections: {data.count}
+          Detektioner: {data.count}
         </p>
       </div>
     );
@@ -40,20 +40,22 @@ const CustomTooltip = (props: any) => {
 };
 
 export function HourlyDistributionChart({ data }: HourlyDistributionChartProps) {
+  const safeData = data || [];
+
   return (
     <div style={{ width: '100%', height: '300px' }}>
       <h3 style={{ textAlign: 'center', marginBottom: '1rem' }}>
-        Time of Day Distribution
+        Tidsfördelning av detektioner
       </h3>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data}>
+        <LineChart data={safeData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
-            dataKey="hourLabel"
+            dataKey="hour"
             tick={{ fontSize: 12 }}
-            interval={2}
+            interval={1}
           />
-          <YAxis label={{ value: 'Detections', angle: -90, position: 'insideLeft' }} />
+          <YAxis label={{ value: 'Detektioner', angle: -90, position: 'insideLeft' }} />
           <Tooltip content={<CustomTooltip />} />
           <Line
             type="monotone"
