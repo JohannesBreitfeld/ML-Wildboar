@@ -11,19 +11,22 @@ public class ImageIngestFunction
     private readonly ILogger _logger;
     private readonly IImageExtractor _imageExtractor;
     private readonly IImageRepository _imageRepository;
+    private readonly IQueueService _queueService;
 
     public ImageIngestFunction(
         ILoggerFactory loggerFactory,
         IImageExtractor imageExtractor,
-        IImageRepository imageRepository)
+        IImageRepository imageRepository,
+        IQueueService queueService)
     {
         _logger = loggerFactory.CreateLogger<ImageIngestFunction>();
         _imageExtractor = imageExtractor;
         _imageRepository = imageRepository;
+        _queueService = queueService;
     }
 
     [Function("ImageIngestFunction")]
-    public async Task Run([TimerTrigger("* * 6 * * *", RunOnStartup = true)] TimerInfo myTimer)
+    public async Task Run([TimerTrigger("* * 6 * * *")] TimerInfo myTimer)
     {
         try
         {
@@ -46,6 +49,7 @@ public class ImageIngestFunction
 
             _logger.LogInformation($"Found {imageAttachments.Count} new image attachments");
 
+            int successCount = 0;
             foreach (var attachment in imageAttachments)
             {
                 try
@@ -70,6 +74,7 @@ public class ImageIngestFunction
                     await _imageRepository.SaveImageRecordAsync(imageRecord);
 
                     _logger.LogInformation("Saved image record for: {imageId}", attachment.Id);
+                    successCount++;
                 }
                 catch (Exception ex)
                 {
@@ -78,7 +83,18 @@ public class ImageIngestFunction
             }
 
             var localEndTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, swedishTimeZone);
-            _logger.LogInformation($"Image ingestion completed at {localEndTime:yyyy-MM-dd HH:mm:ss}. Processed {imageAttachments.Count} images.");
+            _logger.LogInformation($"Image ingestion completed at {localEndTime:yyyy-MM-dd HH:mm:ss}. Processed {successCount}/{imageAttachments.Count} images successfully.");
+
+            // Trigger image processing job via queue only if we successfully processed images
+            if (successCount > 0)
+            {
+                await _queueService.SendProcessingTriggerAsync(successCount);
+                _logger.LogInformation("Image processing job triggered for {successCount} images", successCount);
+            }
+            else
+            {
+                _logger.LogWarning("No images were successfully processed. Skipping image processing job trigger.");
+            }
         }
         catch (Exception ex)
         {

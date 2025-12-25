@@ -24,6 +24,7 @@ builder.Services.Configure<ProcessingSettings>(
     builder.Configuration.GetSection("Processing"));
 
 builder.Services.AddImageStorage(builder.Configuration);
+builder.Services.AddQueueSettings(builder.Configuration);
 
 var modelPath = Path.Combine(AppContext.BaseDirectory, "MLModel.mlnet");
 if (!File.Exists(modelPath))
