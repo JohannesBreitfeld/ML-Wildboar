@@ -10,6 +10,10 @@
     <Project Path="Shared/ML-Wildboar.Shared.Storage/ML-Wildboar.Shared.Storage.csproj" />
   </Folder>
   <Folder Name="/Web/">
-    <Project Path="Web/ML-Wildboar.Dashboard/ML-Wildboar.Dashboard.csproj" />
+    <Project Path="Web/ML-Wildboar.Dashboard/ML-Wildboar.Dashboard.esproj">
+      <Build />
+      <Deploy />
+    </Project>
+    <Project Path="Web/ML-Wildboar.Functions.Dashboard/ML-Wildboar.Functions.Dashboard.csproj" />
   </Folder>
 </Solution>

@@ -18,11 +18,38 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
           lfs: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build Azure Functions
+        run: |
+          cd Web/ML-Wildboar.Functions.Dashboard
+          dotnet restore
+          dotnet build --configuration Release --no-restore
+          dotnet publish --configuration Release --no-build --output ./output
+
+      - name: Install OIDC Client from Core Package
+        run: npm install @actions/core@1.6.0 @actions/http-client
+
+      - name: Get Id Token
+        uses: actions/github-script@v6
+        id: idtoken
+        with:
+          script: |
+            const coredemo = require('@actions/core')
+            return await coredemo.getIDToken()
+          result-encoding: string
 
       - name: Build And Deploy
         id: builddeploy
@@ -33,6 +60,7 @@ jobs:
           app_location: "Web/ML-Wildboar.Dashboard"
           api_location: "Web/ML-Wildboar.Functions.Dashboard"
           output_location: "build"
+          github_id_token: ${{ steps.idtoken.outputs.result }}
         env:
           CI: false
 
