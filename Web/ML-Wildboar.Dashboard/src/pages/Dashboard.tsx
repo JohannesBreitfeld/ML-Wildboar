@@ -103,12 +103,12 @@ export function Dashboard() {
           </div>
 
           <div className="charts-grid">
-            <div className="chart-container">
+            {/* <div className="chart-container">
               <DetectionTimeSeriesChart
                 data={data.detections}
                 onPointClick={handleTimeSeriesClick}
               />
-            </div>
+            </div> */}
 
             <div className="chart-container">
               <DailyDetectionChart data={dailyData} onDayClick={handleDayClick} />

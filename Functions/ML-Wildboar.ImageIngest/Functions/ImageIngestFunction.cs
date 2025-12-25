@@ -23,7 +23,7 @@ public class ImageIngestFunction
     }
 
     [Function("ImageIngestFunction")]
-    public async Task Run([TimerTrigger("* * 6 * * *", RunOnStartup = true)] TimerInfo myTimer)
+    public async Task Run([TimerTrigger("* * 6 * * *")] TimerInfo myTimer)
     {
         try
         {
