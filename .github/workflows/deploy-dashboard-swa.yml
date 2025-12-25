@@ -10,7 +10,6 @@ on:
       - 'Shared/ML-Wildboar.Shared.Core/**'
       - 'Shared/ML-Wildboar.Shared.Storage/**'
       - '.github/workflows/deploy-dashboard-swa.yml'
-
   workflow_dispatch:
 
 jobs:
@@ -27,40 +26,15 @@ jobs:
           submodules: true
           lfs: false
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      - name: Build Azure Functions
-        run: |
-          cd Web/ML-Wildboar.Functions.Dashboard
-          dotnet restore
-          dotnet build --configuration Release --no-restore
-          dotnet publish --configuration Release --no-build --output ./output
-
-      - name: Install OIDC Client from Core Package
-        run: npm install @actions/core@1.6.0 @actions/http-client
-
-      - name: Get Id Token
-        uses: actions/github-script@v6
-        id: idtoken
-        with:
-          script: |
-            const coredemo = require('@actions/core')
-            return await coredemo.getIDToken()
-          result-encoding: string
-
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_SALMON_WAVE_0A0BD0603 }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_SALMON_WAVE_0A0BD0602 }}
           action: "upload"
           app_location: "Web/ML-Wildboar.Dashboard"
           api_location: "Web/ML-Wildboar.Functions.Dashboard"
           output_location: "build"
-          github_id_token: ${{ steps.idtoken.outputs.result }}
         env:
           CI: false
 
@@ -73,5 +47,5 @@ jobs:
         id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_SALMON_WAVE_0A0BD0603 }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_SALMON_WAVE_0A0BD0602 }}
           action: "close"
