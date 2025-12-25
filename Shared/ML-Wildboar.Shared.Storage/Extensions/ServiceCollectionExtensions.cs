@@ -112,7 +112,7 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<QueueSettings>(options =>
         {
-            options.ConnectionString = configuration["Queue:ConnectionString"] ?? string.Empty;
+            options.ConnectionString = configuration["AzureStorage:ConnectionString"] ?? string.Empty;
             options.QueueName = configuration["Queue:QueueName"] ?? "image-processing-queue";
         });
 
