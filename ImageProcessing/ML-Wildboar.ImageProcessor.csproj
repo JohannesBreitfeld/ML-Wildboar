@@ -10,6 +10,7 @@
 
   <!-- ML.NET Dependencies -->
   <ItemGroup>
+    <PackageReference Include="Azure.Storage.Queues" Version="12.24.0" />
     <PackageReference Include="Microsoft.Extensions.ML" Version="5.0.0" />
     <PackageReference Include="Microsoft.ML" Version="5.0.0" />
     <PackageReference Include="Microsoft.ML.Vision" Version="5.0.0" />

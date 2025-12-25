@@ -98,4 +98,24 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Registers Azure Queue Storage settings from configuration.
+    /// Settings are read from the "Queue" configuration section.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">The configuration to bind settings from.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddQueueSettings(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.Configure<QueueSettings>(options =>
+        {
+            options.ConnectionString = configuration["Queue:ConnectionString"] ?? string.Empty;
+            options.QueueName = configuration["Queue:QueueName"] ?? "image-processing-queue";
+        });
+
+        return services;
+    }
 }
