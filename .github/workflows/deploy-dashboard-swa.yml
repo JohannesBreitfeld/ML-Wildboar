@@ -23,16 +23,6 @@ jobs:
           submodules: true
           lfs: false
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Build Azure Functions
-        run: |
-          cd Web/ML-Wildboar.Functions.Dashboard
-          dotnet publish --configuration Release --output ./publish
-
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -43,9 +33,8 @@ jobs:
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "Web/ML-Wildboar.Dashboard" # App source code path
-          api_location: "Web/ML-Wildboar.Functions.Dashboard/publish" # Api source code path - optional
+          api_location: "Web/ML-Wildboar.Functions.Dashboard" # Api source code path - optional
           output_location: "build" # Built app content directory - optional
-          skip_api_build: true
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
