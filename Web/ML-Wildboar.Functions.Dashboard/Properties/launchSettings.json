@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "ML-Wildboar.Functions.Dashboard": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7073",
+      "launchBrowser": false,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
