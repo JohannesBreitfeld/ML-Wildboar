@@ -31,23 +31,4 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddStaticWebAppCors(this IServiceCollection services)
-    {
-        services.AddCors(options =>
-        {
-            options.AddPolicy("SWAPolicy", policy =>
-            {
-                policy.WithOrigins(
-                        "http://localhost:4280",  // SWA CLI local dev
-                        "http://localhost:3000",  // React dev server
-                        "https://*.azurestaticapps.net"
-                    )
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
-            });
-        });
-
-        return services;
-    }
 }
