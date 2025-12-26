@@ -2,7 +2,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using ML_Wildboar.Functions.Dashboard.Models;
-using ML_Wildboar.Shared.Storage.Repositories;
+using ML_Wildboar.Functions.Dashboard.Repositories;
 using System.Globalization;
 using System.Net;
 

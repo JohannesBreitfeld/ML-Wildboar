@@ -2,33 +2,119 @@ using Azure.Data.Tables;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ML_Wildboar.Shared.Storage.Repositories;
+using Microsoft.Extensions.Options;
+using ML_Wildboar.Functions.Dashboard.Repositories;
+using ML_Wildboar.Functions.Dashboard.Settings;
 
 namespace ML_Wildboar.Functions.Dashboard.Extensions;
 
+/// <summary>
+/// Extension methods for registering Azure Storage services with dependency injection.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddAzureStorage(this IServiceCollection services, IConfiguration configuration)
+    /// <summary>
+    /// Registers Azure Storage settings, clients, and repositories for image storage.
+    /// This is a convenience method that calls all the individual registration methods.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">The configuration to bind settings from.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddImageStorage(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
-        var storageConnectionString = configuration["AzureStorage:ConnectionString"]
-            ?? throw new InvalidOperationException("Azure Storage connection string not configured");
+        return services
+            .AddAzureStorageSettings(configuration)
+            .AddAzureStorageClients()
+            .AddImageRepository();
+    }
 
-        // Register Azure Storage clients
-        services.AddSingleton(new TableServiceClient(storageConnectionString));
-        services.AddSingleton(new BlobServiceClient(storageConnectionString));
-
-        // Register ImageRepository
-        services.AddScoped<IImageRepository>(sp =>
+    /// <summary>
+    /// Registers Azure Storage settings from configuration.
+    /// Settings are read from the "AzureStorage" configuration section.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">The configuration to bind settings from.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddAzureStorageSettings(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.Configure<AzureStorageSettings>(options =>
         {
-            var tableClient = sp.GetRequiredService<TableServiceClient>();
-            var blobClient = sp.GetRequiredService<BlobServiceClient>();
-            var tableName = configuration["AzureStorage:TableName"] ?? "images";
-            var containerName = configuration["AzureStorage:BlobContainerName"] ?? "images";
-
-            return new ImageRepository(tableClient, blobClient, tableName, containerName);
+            options.ConnectionString = configuration["AzureStorage:ConnectionString"] ?? string.Empty;
+            options.TableName = configuration["AzureStorage:TableName"] ?? "images";
+            options.BlobContainerName = configuration["AzureStorage:BlobContainerName"] ?? "images";
         });
 
         return services;
     }
 
+    /// <summary>
+    /// Registers Azure Storage clients (TableServiceClient and BlobServiceClient) as singletons.
+    /// Requires AzureStorageSettings to be registered first.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddAzureStorageClients(this IServiceCollection services)
+    {
+        services.AddSingleton(sp =>
+        {
+            var settings = sp.GetRequiredService<IOptions<AzureStorageSettings>>().Value;
+            return new TableServiceClient(settings.ConnectionString);
+        });
+
+        services.AddSingleton(sp =>
+        {
+            var settings = sp.GetRequiredService<IOptions<AzureStorageSettings>>().Value;
+            return new BlobServiceClient(settings.ConnectionString);
+        });
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers the IImageRepository implementation as a singleton service.
+    /// Requires Azure Storage clients to be registered first.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddImageRepository(this IServiceCollection services)
+    {
+        services.AddSingleton<IImageRepository>(sp =>
+        {
+            var tableServiceClient = sp.GetRequiredService<TableServiceClient>();
+            var blobServiceClient = sp.GetRequiredService<BlobServiceClient>();
+            var settings = sp.GetRequiredService<IOptions<AzureStorageSettings>>().Value;
+
+            return new ImageRepository(
+                tableServiceClient,
+                blobServiceClient,
+                settings.TableName,
+                settings.BlobContainerName);
+        });
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers Azure Queue Storage settings from configuration.
+    /// Settings are read from the "Queue" configuration section.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">The configuration to bind settings from.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddQueueSettings(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.Configure<QueueSettings>(options =>
+        {
+            options.ConnectionString = configuration["AzureStorage:ConnectionString"] ?? string.Empty;
+            options.QueueName = configuration["Queue:QueueName"] ?? "image-processing-queue";
+        });
+
+        return services;
+    }
 }

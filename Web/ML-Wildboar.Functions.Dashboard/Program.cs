@@ -7,10 +7,6 @@ using System.Text.Json.Serialization;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
-    .ConfigureAppConfiguration((context, config) =>
-    {
-        config.AddAzureKeyVault();
-    })
     .ConfigureServices((context, services) =>
     {
         services.Configure<JsonSerializerOptions>(options =>
@@ -23,7 +19,7 @@ var host = new HostBuilder()
             .AddApplicationInsightsTelemetryWorkerService()
             .ConfigureFunctionsApplicationInsights();
 
-        services.AddAzureStorage(context.Configuration);
+        services.AddImageStorage(context.Configuration);
     })
     .Build();
 

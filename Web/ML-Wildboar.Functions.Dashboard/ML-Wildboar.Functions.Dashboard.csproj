@@ -15,14 +15,10 @@
 		<PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.23.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="2.50.0" />
 
-		<PackageReference Include="Azure.Identity" Version="1.17.1" />
-		<PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.7.0" />
+		<PackageReference Include="Azure.Data.Tables" Version="12.11.0" />
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.26.0" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\..\Shared\ML-Wildboar.Shared.Core\ML-Wildboar.Shared.Core.csproj" />
-		<ProjectReference Include="..\..\Shared\ML-Wildboar.Shared.Storage\ML-Wildboar.Shared.Storage.csproj" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<None Update="host.json">
