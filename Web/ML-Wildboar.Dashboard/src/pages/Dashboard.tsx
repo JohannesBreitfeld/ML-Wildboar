@@ -3,7 +3,6 @@ import { useDashboard } from '../context/DashboardContext';
 import { useDetectionData } from '../hooks/useDetectionData';
 import { useImageGallery } from '../hooks/useImageGallery';
 import { DateRangePicker } from '../components/filters/DateRangePicker';
-import { DetectionTimeSeriesChart } from '../components/charts/DetectionTimeSeriesChart';
 import { DailyDetectionChart } from '../components/charts/DailyDetectionChart';
 import { HourlyDistributionChart } from '../components/charts/HourlyDistributionChart';
 import { ImageGallery } from '../components/gallery/ImageGallery';
@@ -43,11 +42,6 @@ export function Dashboard() {
   const handleDayClick = (date: string, containsWildboar?: boolean) => {
     setSelectedDate(new Date(date));
     setShowWildboarImages(containsWildboar);
-  };
-
-  const handleTimeSeriesClick = (timestamp: string) => {
-    const date = new Date(timestamp);
-    setSelectedDate(date);
   };
 
   if (error) {
@@ -103,13 +97,6 @@ export function Dashboard() {
           </div>
 
           <div className="charts-grid">
-            {/* <div className="chart-container">
-              <DetectionTimeSeriesChart
-                data={data.detections}
-                onPointClick={handleTimeSeriesClick}
-              />
-            </div> */}
-
             <div className="chart-container">
               <DailyDetectionChart data={dailyData} onDayClick={handleDayClick} />
             </div>
