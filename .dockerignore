@@ -1,0 +1,63 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDEs and editors
+.vs
+.vscode
+.idea
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build outputs
+**/bin/
+**/obj/
+**/out/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+
+# Test results
+TestResults/
+*.trx
+*.coverage
+
+# Node.js (for Web projects)
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Docker files (don't need these in build context)
+**/.dockerignore
+**/Dockerfile
+docker-compose*.yml
+
+# Documentation
+**/*.md
+LICENSE
+
+# Azure Functions
+**/local.settings.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Exclude everything except what we need for ImageProcessing build
+# Keep only: ImageProcessing/, Shared/, and necessary project files
+Functions/
+Web/
+.github/
+*.sln

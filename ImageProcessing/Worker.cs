@@ -1,11 +1,8 @@
-using Azure.Storage.Queues;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using ML_Wildboar.ImageProcessor.Services;
-using ML_Wildboar.Shared.Storage.Settings;
 
 namespace ML_Wildboar.ImageProcessor;
 
@@ -19,54 +16,24 @@ public class Worker : BackgroundService
     private readonly IHostApplicationLifetime _hostLifetime;
     private readonly ILogger<Worker> _logger;
     private readonly TelemetryClient? _telemetryClient;
-    private readonly QueueClient _queueClient;
 
     public Worker(
         IImageProcessingService processingService,
         IHostApplicationLifetime hostLifetime,
         ILogger<Worker> logger,
-        IOptions<QueueSettings> queueSettings,
         TelemetryClient? telemetryClient = null)
     {
         _processingService = processingService;
         _hostLifetime = hostLifetime;
         _logger = logger;
         _telemetryClient = telemetryClient;
-
-        var settings = queueSettings.Value;
-        _queueClient = new QueueClient(settings.ConnectionString, settings.QueueName);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Azure.Storage.Queues.Models.QueueMessage? queueMessage = null;
-
         try
         {
             _logger.LogInformation("ML-Wildboar Image Processor started at {Time}", DateTimeOffset.UtcNow);
-
-            // Read message from queue to trigger processing
-            try
-            {
-                var response = await _queueClient.ReceiveMessageAsync(cancellationToken: stoppingToken);
-                queueMessage = response.Value;
-
-                if (queueMessage != null)
-                {
-                    _logger.LogInformation(
-                        "Processing triggered by queue message. Message ID: {MessageId}, Content: {Content}",
-                        queueMessage.MessageId,
-                        queueMessage.MessageText);
-                }
-                else
-                {
-                    _logger.LogInformation("No queue message found. Processing all unprocessed images.");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Failed to read queue message. Proceeding with processing anyway.");
-            }
 
             // Track operation start time for Application Insights
             var operationStartTime = DateTimeOffset.UtcNow;
@@ -144,26 +111,6 @@ public class Worker : BackgroundService
         }
         finally
         {
-            // Delete queue message if processing completed
-            if (queueMessage != null)
-            {
-                try
-                {
-                    await _queueClient.DeleteMessageAsync(
-                        queueMessage.MessageId,
-                        queueMessage.PopReceipt,
-                        cancellationToken: CancellationToken.None);
-
-                    _logger.LogInformation(
-                        "Queue message deleted successfully. Message ID: {MessageId}",
-                        queueMessage.MessageId);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to delete queue message. Message ID: {MessageId}", queueMessage.MessageId);
-                }
-            }
-
             if (_telemetryClient != null)
             {
                 await _telemetryClient.FlushAsync(stoppingToken);

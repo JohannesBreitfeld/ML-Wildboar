@@ -22,7 +22,6 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IImageExtractor, ImageExtractor>();
-        services.AddScoped<IQueueService, QueueService>();
 
         return services;
     }
