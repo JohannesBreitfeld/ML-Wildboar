@@ -18,7 +18,6 @@ builder.Services
 
 builder.Services
     .AddGmailSettings(builder.Configuration)
-    .AddQueueSettings(builder.Configuration)
     .AddImageStorage(builder.Configuration)
     .AddApplicationServices();
 

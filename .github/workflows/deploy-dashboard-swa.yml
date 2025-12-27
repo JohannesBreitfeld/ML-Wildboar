@@ -7,8 +7,6 @@ on:
     paths:
       - 'Web/ML-Wildboar.Dashboard/**'
       - 'Web/ML-Wildboar.Functions.Dashboard/**'
-      - 'Shared/ML-Wildboar.Shared.Core/**'
-      - 'Shared/ML-Wildboar.Shared.Storage/**'
       - '.github/workflows/deploy-dashboard-swa.yml'
   workflow_dispatch:
 
