@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using ML_Wildboar.ImageProcessor.Settings;
 using ML_Wildboar.Shared.Storage.Entities;
 using ML_Wildboar.Shared.Storage.Repositories;
-using WildboarMonitor_FunctionApp;
+using WildboarModel_ConsoleApp1;
 
 namespace ML_Wildboar.ImageProcessor.Services;
 
@@ -14,13 +14,13 @@ namespace ML_Wildboar.ImageProcessor.Services;
 public class ImageProcessingService : IImageProcessingService
 {
     private readonly IImageRepository _imageRepository;
-    private readonly PredictionEnginePool<MLModel.ModelInput, MLModel.ModelOutput> _predictionEnginePool;
+    private readonly PredictionEnginePool<WildboarModel.ModelInput, WildboarModel.ModelOutput> _predictionEnginePool;
     private readonly ProcessingSettings _settings;
     private readonly ILogger<ImageProcessingService> _logger;
 
     public ImageProcessingService(
         IImageRepository imageRepository,
-        PredictionEnginePool<MLModel.ModelInput, MLModel.ModelOutput> predictionEnginePool,
+        PredictionEnginePool<WildboarModel.ModelInput, WildboarModel.ModelOutput> predictionEnginePool,
         IOptions<ProcessingSettings> settings,
         ILogger<ImageProcessingService> logger)
     {
@@ -162,14 +162,14 @@ public class ImageProcessingService : IImageProcessingService
 
         var imageBytes = await _imageRepository.DownloadImageFromBlobAsync(imageRecord.BlobStorageUrl);
 
-        var input = new MLModel.ModelInput
+        var input = new WildboarModel.ModelInput
         {
             ImageSource = imageBytes
         };
 
         var prediction = _predictionEnginePool.Predict(input);
 
-        var labelScores = MLModel.GetSortedScoresWithLabels(prediction);
+        var labelScores = WildboarModel.GetSortedScoresWithLabels(prediction);
         var topPrediction = labelScores.First();
 
         imageRecord.IsProcessed = true;

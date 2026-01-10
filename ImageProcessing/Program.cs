@@ -7,7 +7,7 @@ using ML_Wildboar.ImageProcessor.Services;
 using ML_Wildboar.ImageProcessor.Settings;
 using ML_Wildboar.Shared.Core.Extensions;
 using ML_Wildboar.Shared.Storage.Extensions;
-using WildboarMonitor_FunctionApp;
+using WildboarModel_ConsoleApp1;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -25,13 +25,13 @@ builder.Services.Configure<ProcessingSettings>(
 
 builder.Services.AddImageStorage(builder.Configuration);
 
-var modelPath = Path.Combine(AppContext.BaseDirectory, "MLModel.mlnet");
+var modelPath = Path.Combine(AppContext.BaseDirectory, "WildboarModel.mlnet");
 if (!File.Exists(modelPath))
 {
     throw new FileNotFoundException($"ML model not found at: {modelPath}");
 }
 
-builder.Services.AddPredictionEnginePool<MLModel.ModelInput, MLModel.ModelOutput>()
+builder.Services.AddPredictionEnginePool<WildboarModel.ModelInput, WildboarModel.ModelOutput>()
     .FromFile(modelPath);
 
 builder.Services.AddSingleton<IImageProcessingService, ImageProcessingService>();
