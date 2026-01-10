@@ -29,11 +29,11 @@ public class GetDetections(IImageRepository imageRepository, ILogger<GetDetectio
             // Default to last 7 days if not specified
             var endDate = string.IsNullOrEmpty(endDateStr)
                 ? DateTime.UtcNow
-                : DateTime.Parse(endDateStr, CultureInfo.InvariantCulture);
+                : DateTime.Parse(endDateStr, CultureInfo.InvariantCulture).Date.AddDays(1).AddTicks(-1);
 
             var startDate = string.IsNullOrEmpty(startDateStr)
                 ? endDate.AddDays(-7)
-                : DateTime.Parse(startDateStr, CultureInfo.InvariantCulture);
+                : DateTime.Parse(startDateStr, CultureInfo.InvariantCulture).Date;
 
             double? minConfidence = string.IsNullOrEmpty(minConfidenceStr)
                 ? null
