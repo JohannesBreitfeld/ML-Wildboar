@@ -34,10 +34,10 @@ export function processDetectionDataByDay(
     dailyMap.set(dateKey, (dailyMap.get(dateKey) || 0) + d.count);
   });
 
-  // Convert to chart data
+  // Convert to chart data - iterate over ALL days with images (not just wildboar days)
   const chartData: DailyChartData[] = [];
-  dailyMap.forEach((wildboarCount, dateKey) => {
-    const totalForDay = totalImagesByDay.get(dateKey) || wildboarCount;
+  totalImagesByDay.forEach((totalForDay, dateKey) => {
+    const wildboarCount = dailyMap.get(dateKey) || 0;
     const date = new Date(dateKey);
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
