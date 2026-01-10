@@ -26,7 +26,7 @@ builder.Services.Configure<ProcessingSettings>(
 builder.Services.AddImageStorage(builder.Configuration);
 builder.Services.AddQueueSettings(builder.Configuration);
 
-var modelPath = Path.Combine(AppContext.BaseDirectory, "MLModel.mlnet");
+var modelPath = Path.Combine(AppContext.BaseDirectory, "WildboarModel.mlnet");
 if (!File.Exists(modelPath))
 {
     throw new FileNotFoundException($"ML model not found at: {modelPath}");
