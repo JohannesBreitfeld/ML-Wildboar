@@ -14,18 +14,26 @@ public interface IImageRepository
     Task<DateTime?> GetLastCapturedAtAsync();
 
     /// <summary>
-    /// Uploads an image to Azure Blob Storage.
+    /// Uploads an image to Azure Blob Storage and attaches metadata so the BlobTrigger analysis
+    /// function can look up the corresponding Table Storage record without a full table scan.
     /// </summary>
     /// <param name="imageData">The image data as a byte array.</param>
     /// <param name="imageId">Unique identifier for the image (used as blob name).</param>
+    /// <param name="capturedAt">When the camera captured the image; stored as blob metadata.</param>
+    /// <param name="rowKey">The Table Storage RowKey for this record; stored as blob metadata.</param>
     /// <returns>The URL of the uploaded blob.</returns>
-    Task<string> UploadImageToBlobAsync(byte[] imageData, string imageId);
+    Task<string> UploadImageToBlobAsync(byte[] imageData, string imageId, DateTime capturedAt, string rowKey);
 
     /// <summary>
     /// Saves an image record to Azure Table Storage.
     /// </summary>
     /// <param name="record">The image record to save.</param>
     Task SaveImageRecordAsync(ImageRecord record);
+
+    /// <summary>
+    /// Gets a single image record by partition key and row key. Returns null if not found.
+    /// </summary>
+    Task<ImageRecord?> GetImageRecordAsync(string partitionKey, string rowKey);
 
     /// <summary>
     /// Gets all unprocessed image records from Azure Table Storage.

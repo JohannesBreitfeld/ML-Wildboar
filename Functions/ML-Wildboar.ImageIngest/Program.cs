@@ -18,6 +18,7 @@ builder.Services
 
 builder.Services
     .AddGmailSettings(builder.Configuration)
+    .AddAnthropicSettings(builder.Configuration)
     .AddImageStorage(builder.Configuration)
     .AddApplicationServices();
 
