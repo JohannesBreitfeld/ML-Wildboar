@@ -23,7 +23,7 @@ public class ImageIngestFunction
     }
 
     [Function("ImageIngestFunction")]
-    public async Task Run([TimerTrigger("* * 6 * * *")] TimerInfo myTimer)
+    public async Task Run([TimerTrigger("0 */5 * * * *")] TimerInfo myTimer)
     {
         try
         {
@@ -51,21 +51,26 @@ public class ImageIngestFunction
             {
                 try
                 {
+                    var rowKey = Guid.CreateVersion7().ToString();
+
                     var blobUrl = await _imageRepository.UploadImageToBlobAsync(
                         attachment.Data,
-                        attachment.Id);
+                        attachment.Id,
+                        attachment.Timestamp,
+                        rowKey);
 
                     _logger.LogInformation("Uploaded image to blob: {blobUrl}", blobUrl);
 
                     var imageRecord = new ImageRecord
                     {
                         PartitionKey = attachment.Timestamp.ToString("yyyy-MM-dd"),
-                        RowKey = Guid.NewGuid().ToString(),
+                        RowKey = rowKey,
                         CapturedAt = attachment.Timestamp,
                         BlobStorageUrl = blobUrl,
+                        IsAnalyzed = false,
                         IsProcessed = false,
-                        ContainsWildboar = null,  
-                        ConfidenceScore = null   
+                        ContainsWildboar = null,
+                        ConfidenceScore = null
                     };
 
                     await _imageRepository.SaveImageRecordAsync(imageRecord);

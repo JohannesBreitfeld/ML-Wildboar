@@ -19,9 +19,20 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection AddAnthropicSettings(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<AnthropicSettings>(options =>
+        {
+            options.ApiKey = configuration["Anthropic:ApiKey"] ?? string.Empty;
+        });
+
+        return services;
+    }
+
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IImageExtractor, ImageExtractor>();
+        services.AddScoped<IImageAnalysisService, ImageAnalysisService>();
 
         return services;
     }

@@ -53,7 +53,7 @@ public class ImageRepository : IImageRepository
     }
 
     /// <inheritdoc />
-    public async Task<string> UploadImageToBlobAsync(byte[] imageData, string imageId)
+    public async Task<string> UploadImageToBlobAsync(byte[] imageData, string imageId, DateTime capturedAt, string rowKey)
     {
         await _blobContainerClient.CreateIfNotExistsAsync();
 
@@ -61,6 +61,16 @@ public class ImageRepository : IImageRepository
 
         using var stream = new MemoryStream(imageData);
         await blobClient.UploadAsync(stream, overwrite: true);
+
+        // Metadata lets the BlobTrigger analysis function resolve the Table Storage record
+        // without performing a full table scan on BlobStorageUrl.
+        var metadata = new Dictionary<string, string>
+        {
+            ["CapturedAt"] = capturedAt.ToString("O"),
+            ["RowKey"] = rowKey,
+            ["PartitionKey"] = capturedAt.ToString("yyyy-MM-dd")
+        };
+        await blobClient.SetMetadataAsync(metadata);
 
         return blobClient.Uri.ToString();
     }
@@ -71,6 +81,20 @@ public class ImageRepository : IImageRepository
         await _tableClient.CreateIfNotExistsAsync();
 
         await _tableClient.UpsertEntityAsync(record);
+    }
+
+    /// <inheritdoc />
+    public async Task<ImageRecord?> GetImageRecordAsync(string partitionKey, string rowKey)
+    {
+        try
+        {
+            var response = await _tableClient.GetEntityAsync<ImageRecord>(partitionKey, rowKey);
+            return response.Value;
+        }
+        catch (Azure.RequestFailedException ex) when (ex.Status == 404)
+        {
+            return null;
+        }
     }
 
     /// <inheritdoc />
