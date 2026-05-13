@@ -1,0 +1,69 @@
+:root {
+  /* Backgrounds */
+  --bg:            oklch(98% 0.005 90);
+  --bg-2:          oklch(96% 0.008 90);
+  --surface:       oklch(100% 0 0);
+  --surface-2:     oklch(97% 0.005 90);
+  --border:        oklch(90% 0.008 90);
+  --border-strong: oklch(82% 0.012 90);
+
+  /* Text */
+  --text:   oklch(20% 0.015 145);
+  --text-2: oklch(45% 0.012 145);
+  --text-3: oklch(60% 0.012 145);
+
+  /* Accent */
+  --accent:      oklch(42% 0.08 145);
+  --accent-2:    oklch(55% 0.09 145);
+  --accent-soft: oklch(94% 0.025 145);
+  --accent-fg:   oklch(98% 0.005 145);
+
+  /* Status */
+  --empty:      oklch(75% 0.015 60);
+  --has-animal: oklch(45% 0.09 145);
+  --warn:       oklch(60% 0.16 50);
+  --danger:     oklch(55% 0.18 25);
+
+  /* Species colors */
+  --sp-vildsvin: oklch(42% 0.10 30);
+  --sp-radjur:   oklch(55% 0.10 70);
+  --sp-rav:      oklch(58% 0.14 45);
+  --sp-alg:      oklch(38% 0.06 280);
+  --sp-hare:     oklch(68% 0.07 90);
+  --sp-gravling: oklch(35% 0.02 240);
+  --sp-kronvilt: oklch(50% 0.10 20);
+  --sp-dovhjort: oklch(60% 0.09 110);
+  --sp-fagel:    oklch(62% 0.08 200);
+  --sp-okant:    oklch(50% 0.00 0);
+  --sp-lo:       oklch(48% 0.08 55);
+  --sp-varg:     oklch(40% 0.04 270);
+
+  /* Layout */
+  --gap:         20px;
+  --pad-card:    24px;
+  --pad-section: 32px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius:    10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px rgba(20, 30, 25, 0.04);
+  --shadow:    0 1px 2px rgba(20, 30, 25, 0.04), 0 4px 16px -4px rgba(20, 30, 25, 0.06);
+  --shadow-lg: 0 8px 32px -8px rgba(20, 30, 25, 0.18);
+
+  /* Typography */
+  --font-sans:    'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono:    'Geist Mono', ui-monospace, monospace;
+  --font-display: 'Instrument Serif', ui-serif, Georgia, serif;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --gap:         12px;
+    --pad-card:    14px;
+    --pad-section: 16px;
+  }
+}

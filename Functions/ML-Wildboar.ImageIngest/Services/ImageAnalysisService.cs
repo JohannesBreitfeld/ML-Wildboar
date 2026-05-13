@@ -263,6 +263,15 @@ public class ImageAnalysisService : IImageAnalysisService
             json = json.Substring(0, json.LastIndexOf("```")).Trim();
         }
 
+        // Extract JSON object in case Claude added any preamble or trailing text.
+        if (!json.StartsWith("{"))
+        {
+            var start = json.IndexOf('{');
+            var end = json.LastIndexOf('}');
+            if (start >= 0 && end > start)
+                json = json.Substring(start, end - start + 1);
+        }
+
         var parsed = JsonSerializer.Deserialize<ClaudeAnalysisResponse>(json)
             ?? throw new InvalidOperationException("Failed to deserialize Claude response as JSON");
 

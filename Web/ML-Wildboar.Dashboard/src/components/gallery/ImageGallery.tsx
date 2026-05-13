@@ -1,75 +1,36 @@
 import React, { useState } from 'react';
 import { ImageDto } from '../../types/api.types';
-import { ImageThumbnail } from './ImageThumbnail';
+import { ImageCard } from './ImageCard';
 import { ImageLightbox } from './ImageLightbox';
-import './ImageGallery.css';
 
-interface ImageGalleryProps {
+interface Props {
   images: ImageDto[];
-  loading?: boolean;
+  minThumbnailWidth?: number;
+  maxItems?: number;
 }
 
-export function ImageGallery({ images, loading }: ImageGalleryProps) {
-  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
-
-  const handleThumbnailClick = (index: number) => {
-    setSelectedIndex(index);
-  };
-
-  const handleClose = () => {
-    setSelectedIndex(-1);
-  };
-
-  const handlePrevious = () => {
-    setSelectedIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
-  };
-
-  const handleNext = () => {
-    setSelectedIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
-  };
-
-  if (loading) {
-    return (
-      <div className="image-gallery-loading">
-        <div className="loading-spinner"></div>
-        <p>Laddar bilder...</p>
-      </div>
-    );
-  }
-
-  if (images.length === 0) {
-    return (
-      <div className="image-gallery-empty">
-        <p>Inga bilder hittades för det valda datumet och filtren.</p>
-        <small>Försök att välja ett annat datum eller justera dina filter.</small>
-      </div>
-    );
-  }
+export function ImageGallery({ images, minThumbnailWidth = 200, maxItems }: Props) {
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+  const displayed = maxItems != null ? images.slice(0, maxItems) : images;
 
   return (
     <>
-      <div className="image-gallery">
-        <div className="gallery-header">
-          <h3>Bilder ({images.length})</h3>
-        </div>
-        <div className="gallery-grid">
-          {images.map((image, index) => (
-            <ImageThumbnail
-              key={image.id}
-              image={image}
-              onClick={() => handleThumbnailClick(index)}
-            />
-          ))}
-        </div>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(auto-fill, minmax(${minThumbnailWidth}px, 1fr))`,
+        gap: 14,
+      }}>
+        {displayed.map((img, idx) => (
+          <ImageCard key={img.id} image={img} onClick={() => setLightboxIdx(idx)} />
+        ))}
       </div>
-
-      {selectedIndex >= 0 && (
+      {lightboxIdx != null && (
         <ImageLightbox
-          images={images}
-          currentIndex={selectedIndex}
-          onClose={handleClose}
-          onPrevious={handlePrevious}
-          onNext={handleNext}
+          images={displayed}
+          index={lightboxIdx}
+          onClose={() => setLightboxIdx(null)}
+          onPrev={() => setLightboxIdx(i => Math.max(0, (i ?? 0) - 1))}
+          onNext={() => setLightboxIdx(i => Math.min(displayed.length - 1, (i ?? 0) + 1))}
         />
       )}
     </>

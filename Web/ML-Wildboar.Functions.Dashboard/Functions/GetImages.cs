@@ -5,6 +5,7 @@ using ML_Wildboar.Functions.Dashboard.Models;
 using ML_Wildboar.Functions.Dashboard.Repositories;
 using System.Globalization;
 using System.Net;
+using System.Text.Json;
 
 namespace ML_Wildboar.Functions.Dashboard.Functions;
 
@@ -18,86 +19,120 @@ public class GetImages(IImageRepository imageRepository, ILogger<GetImages> logg
 
         try
         {
-            // Parse query parameters
             var query = System.Web.HttpUtility.ParseQueryString(req.Url.Query);
 
-            var date = query["date"];
-            var startHourStr = query["startHour"];
-            var endHourStr = query["endHour"];
-            var containsWildboarStr = query["containsWildboar"];
-            var minConfidenceStr = query["minConfidence"];
+            var date = query["date"];             // single day: yyyy-MM-dd
+            var fromStr = query["from"];           // date range start
+            var toStr = query["to"];               // date range end
+            var speciesStr = query["species"];     // comma-separated
+            var withAnimalsStr = query["withAnimals"];
             var pageSizeStr = query["pageSize"];
             var continuationToken = query["continuationToken"];
 
-            // Validate required parameter
-            if (string.IsNullOrEmpty(date))
+            var pageSize = string.IsNullOrEmpty(pageSizeStr) ? 50 : int.Parse(pageSizeStr, CultureInfo.InvariantCulture);
+            pageSize = Math.Min(pageSize, 200);
+
+            var speciesFilter = string.IsNullOrEmpty(speciesStr)
+                ? []
+                : speciesStr.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+            bool? withAnimalsFilter = string.IsNullOrEmpty(withAnimalsStr) ? null : bool.Parse(withAnimalsStr);
+
+            List<Entities.ImageRecord> records;
+            string? nextToken = null;
+
+            if (!string.IsNullOrEmpty(date))
             {
-                var badRequest = req.CreateResponse(HttpStatusCode.BadRequest);
-                await badRequest.WriteAsJsonAsync(new { error = "Date parameter is required (format: yyyy-MM-dd)" });
+                // Single-day query with pagination
+                (records, nextToken) = await imageRepository.GetImagesByDateAsync(date, pageSize, continuationToken);
+            }
+            else if (!string.IsNullOrEmpty(fromStr) || !string.IsNullOrEmpty(toStr))
+            {
+                var endDate = string.IsNullOrEmpty(toStr)
+                    ? DateTime.UtcNow.Date
+                    : DateTime.Parse(toStr, CultureInfo.InvariantCulture).Date;
+                var startDate = string.IsNullOrEmpty(fromStr)
+                    ? endDate.AddDays(-13)
+                    : DateTime.Parse(fromStr, CultureInfo.InvariantCulture).Date;
+
+                records = await imageRepository.GetImagesByDateRangeAsync(
+                    startDate, endDate.AddDays(1).AddTicks(-1));
+            }
+            else
+            {
+                var badRequest = req.CreateResponse(System.Net.HttpStatusCode.BadRequest);
+                await badRequest.WriteAsJsonAsync(new { error = "Provide 'date' or 'from'/'to' parameters" });
                 return badRequest;
             }
 
-            // Parse optional parameters
-            int? startHour = string.IsNullOrEmpty(startHourStr) ? null : int.Parse(startHourStr, CultureInfo.InvariantCulture);
-            int? endHour = string.IsNullOrEmpty(endHourStr) ? null : int.Parse(endHourStr, CultureInfo.InvariantCulture);
-            bool? containsWildboar = string.IsNullOrEmpty(containsWildboarStr) ? null : bool.Parse(containsWildboarStr);
-            int pageSize = string.IsNullOrEmpty(pageSizeStr) ? 50 : int.Parse(pageSizeStr, CultureInfo.InvariantCulture);
+            // Filter: only analysed images
+            var filtered = records.Where(r => r.IsAnalyzed && r.IsEmpty.HasValue).ToList();
 
-            // Limit page size
-            pageSize = Math.Min(pageSize, 100);
+            // Apply withAnimals filter
+            if (withAnimalsFilter == true)
+                filtered = filtered.Where(r => r.IsEmpty == false).ToList();
+            else if (withAnimalsFilter == false)
+                filtered = filtered.Where(r => r.IsEmpty == true).ToList();
 
-            // Get images for the specified date
-            var (records, nextToken) = await imageRepository.GetImagesByDateAsync(
-                partitionKey: date,
-                startHour: startHour,
-                endHour: endHour,
-                containsWildboar: containsWildboar,
-                pageSize: pageSize,
-                continuationToken: continuationToken
-            );
-
-            // Filter by confidence if specified
-            if (!string.IsNullOrEmpty(minConfidenceStr))
+            // Apply species filter (images that have at least one matching detection)
+            if (speciesFilter.Length > 0)
             {
-                var minConfidence = double.Parse(minConfidenceStr, CultureInfo.InvariantCulture);
-                records = records.Where(r => (r.ConfidenceScore ?? 0) >= minConfidence).ToList();
+                filtered = filtered.Where(r =>
+                {
+                    if (r.IsEmpty == true) return false;
+                    var detections = ParseDetections(r.DetectionsJson);
+                    return detections.Any(d => speciesFilter.Contains(d.Species));
+                }).ToList();
             }
 
-            // Generate SAS tokens for images
+            // Sort newest first and limit
+            var sorted = filtered.OrderByDescending(r => r.CapturedAt).Take(pageSize).ToList();
+
+            // Map to DTOs with SAS URLs
             var imageDtos = new List<ImageDto>();
-            foreach (var record in records)
+            foreach (var record in sorted)
             {
-                var imageUrl = await imageRepository.GetBlobSasUrlAsync(record.BlobStorageUrl, expiryMinutes: 60);
+                if (string.IsNullOrEmpty(record.BlobStorageUrl)) continue;
+                var blobUrl = await imageRepository.GetBlobSasUrlAsync(record.BlobStorageUrl, expiryMinutes: 60);
+                var detections = ParseDetections(record.DetectionsJson);
 
                 imageDtos.Add(new ImageDto(
                     Id: record.RowKey,
-                    CapturedAt: record.CapturedAt,
-                    ContainsWildboar: record.ContainsWildboar ?? false,
-                    ConfidenceScore: record.ConfidenceScore ?? 0,
-                    ImageUrl: imageUrl
+                    PartitionKey: record.PartitionKey,
+                    CapturedAt: record.CapturedAt.ToString("o"),
+                    IsEmpty: record.IsEmpty ?? true,
+                    Weather: record.Weather,
+                    Description: record.Description,
+                    Detections: detections,
+                    BlobUrl: blobUrl
                 ));
             }
 
-            // Create response
-            var response = new ImageGalleryResponse(
-                Images: imageDtos,
-                ContinuationToken: nextToken,
-                TotalCount: records.Count
-            );
+            var response = new ImageGalleryResponse(imageDtos, nextToken, filtered.Count);
 
             var httpResponse = req.CreateResponse(HttpStatusCode.OK);
             await httpResponse.WriteAsJsonAsync(response);
-
             return httpResponse;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error processing GetImages request");
-
             var errorResponse = req.CreateResponse(HttpStatusCode.InternalServerError);
             await errorResponse.WriteAsJsonAsync(new { error = "Failed to retrieve images" });
-
             return errorResponse;
+        }
+    }
+
+    private static List<AnimalDetection> ParseDetections(string? json)
+    {
+        if (string.IsNullOrEmpty(json)) return [];
+        try
+        {
+            return JsonSerializer.Deserialize<List<AnimalDetection>>(json) ?? [];
+        }
+        catch
+        {
+            return [];
         }
     }
 }

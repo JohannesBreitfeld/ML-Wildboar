@@ -84,6 +84,7 @@ public class ImageAnalysisFunction
             PartitionKey = partitionKey,
             RowKey = rowKey,
             CapturedAt = capturedAt,
+            BlobStorageUrl = blobClient.Uri.ToString(),
             IsAnalyzed = true,
             IsEmpty = result.IsEmpty,
             TimeOfDay = result.TimeOfDay,

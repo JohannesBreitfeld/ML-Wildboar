@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ImageDto } from '../../types/api.types';
-import { formatDateTime } from '../../utils/dateHelpers';
-import './ImageThumbnail.css';
 
 interface ImageThumbnailProps {
   image: ImageDto;
@@ -9,52 +7,14 @@ interface ImageThumbnailProps {
 }
 
 export function ImageThumbnail({ image, onClick }: ImageThumbnailProps) {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
-
-  const handleImageLoad = () => {
-    setImageLoaded(true);
-  };
-
-  const handleImageError = () => {
-    setImageError(true);
-  };
-
   return (
-    <div className="image-thumbnail" onClick={onClick}>
-      <div className="thumbnail-image-container">
-        {!imageLoaded && !imageError && (
-          <div className="thumbnail-loading">Hämtar...</div>
-        )}
-        {imageError ? (
-          <div className="thumbnail-error">
-            <span>Misslyckades att ladda</span>
-          </div>
-        ) : (
-          <img
-            src={image.imageUrl}
-            alt={`Tagen: ${formatDateTime(new Date(image.capturedAt))}`}
-            onLoad={handleImageLoad}
-            onError={handleImageError}
-            style={{ display: imageLoaded ? 'block' : 'none' }}
-          />
-        )}
-        {image.containsWildboar && (
-          <div className="wildboar-badge">
-            <span>🐗 Vildsvin</span>
-          </div>
-        )}
-      </div>
-      <div className="thumbnail-info">
-        <div className="thumbnail-time">
-          {formatDateTime(new Date(image.capturedAt))}
-        </div>
-        {image.containsWildboar && (
-          <div className="thumbnail-confidence">
-            Confidence: {(image.confidenceScore * 100).toFixed(1)}%
-          </div>
-        )}
-      </div>
-    </div>
+    <button onClick={onClick} style={{ display: 'block', width: '100%', border: 'none', padding: 0, cursor: 'pointer' }}>
+      <img
+        src={image.blobUrl}
+        alt={image.description || 'Viltkamerabild'}
+        style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover', display: 'block' }}
+        loading="lazy"
+      />
+    </button>
   );
 }
