@@ -8,8 +8,11 @@ public record ImageGalleryResponse(
 
 public record ImageDto(
     string Id,
-    DateTime CapturedAt,
-    bool ContainsWildboar,
-    double ConfidenceScore,
-    string ImageUrl
+    string PartitionKey,
+    string CapturedAt,
+    bool IsEmpty,
+    string? Weather,
+    string? Description,
+    List<AnimalDetection> Detections,
+    string BlobUrl
 );

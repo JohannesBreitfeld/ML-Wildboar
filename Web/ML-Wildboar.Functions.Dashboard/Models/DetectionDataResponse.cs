@@ -1,20 +1,23 @@
 namespace ML_Wildboar.Functions.Dashboard.Models;
 
-public record DetectionDataResponse(
-    List<DetectionDataPoint> Detections,
+public record DashboardDataResponse(
+    List<DailyAgg> DailyAgg,
+    List<HourlyAgg> HourlyAgg,
     int TotalImages,
-    int WildboarImages,
-    DateRange DateRange,
-    Dictionary<string, int> TotalImagesByDay
+    int WithAnimals,
+    int Empty
 );
 
-public record DetectionDataPoint(
-    DateTime Timestamp,
-    int Count,
-    double AverageConfidence
+public record DailyAgg(
+    string Date,
+    int Total,
+    int Empty,
+    int WithAnimals,
+    Dictionary<string, int> BySpecies
 );
 
-public record DateRange(
-    string Start,
-    string End
+public record HourlyAgg(
+    int Hour,
+    int Total,
+    Dictionary<string, int> BySpecies
 );
