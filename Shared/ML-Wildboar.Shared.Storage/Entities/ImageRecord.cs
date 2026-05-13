@@ -36,18 +36,33 @@ public class ImageRecord : ITableEntity
     /// <summary>True once Claude has successfully analysed the image.</summary>
     public bool IsAnalyzed { get; set; }
 
-    /// <summary>True if Claude determined no animals are visible in the image.</summary>
+    /// <summary>True if Claude determined nothing of interest (no animals, humans, domestic animals or vehicles) is visible.</summary>
     public bool? IsEmpty { get; set; }
 
-    /// <summary>Weather description as returned by Claude, e.g. "mulet" or "klart".</summary>
+    /// <summary>Time of day as returned by Claude: "dag", "skymning" or "natt".</summary>
+    public string? TimeOfDay { get; set; }
+
+    /// <summary>Weather as returned by Claude: one of "klart", "mulet", "regn", "dimma", "snö", "okänt".</summary>
     public string? Weather { get; set; }
 
-    /// <summary>Swedish free-text description of the scene produced by Claude.</summary>
+    /// <summary>Image quality as judged by Claude, independent of species confidence: "god", "medel" or "dålig".</summary>
+    public string? ImageQuality { get; set; }
+
+    /// <summary>True if humans (on foot, cyclists, hunters etc.) are visible.</summary>
+    public bool? ContainsHuman { get; set; }
+
+    /// <summary>True if domestic animals (dogs, cats, livestock) are visible.</summary>
+    public bool? ContainsDomestic { get; set; }
+
+    /// <summary>True if vehicles (cars, tractors, ATVs etc.) are visible.</summary>
+    public bool? ContainsVehicle { get; set; }
+
+    /// <summary>Swedish free-text description of the scene produced by Claude (max ~30 words).</summary>
     public string? Description { get; set; }
 
     /// <summary>
     /// Serialized JSON array of detected animals.
-    /// Schema: [{"species":"vildsvin","count":3,"confidence":"hög"}]
+    /// Schema: [{"reasoning":"...","species":"vildsvin","count":3,"confidence":"hög"}]
     /// Deserialize with System.Text.Json to AnimalDetection[].
     /// </summary>
     public string? DetectionsJson { get; set; }
