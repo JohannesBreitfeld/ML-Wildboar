@@ -29,4 +29,10 @@
     <ProjectReference Include="..\..\Shared\ML-Wildboar.Shared.Core\ML-Wildboar.Shared.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="..\..\prompts\production.md" Link="prompts\production.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

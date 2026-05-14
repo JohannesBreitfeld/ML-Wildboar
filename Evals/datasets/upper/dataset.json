@@ -1,0 +1,54 @@
+{
+  "version": "1.0",
+  "name": "upper",
+  "items": [
+    {
+      "id": "upper_2024-06-10_2331",
+      "imagePath": "images/upper_2024-06-10_2331.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "räv", "count": 1 }
+        ],
+        "notes": "Fox in foreground left, eye-shine and tail visible. A-frame trestle scene."
+      },
+      "tags": ["upper", "night-ir", "eye-shine"]
+    },
+    {
+      "id": "upper_2024-06-16_0304",
+      "imagePath": "images/upper_2024-06-16_0304.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "fågel", "count": 3 }
+        ],
+        "notes": "Three birds (look like pigeons/doves) on the ground."
+      },
+      "tags": ["upper", "dusk", "multi-animal"]
+    },
+    {
+      "id": "upper_2024-08-06_0009",
+      "imagePath": "images/upper_2024-08-06_0009.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "Badger on right with distinct face-stripe."
+      },
+      "tags": ["upper", "night-ir"]
+    },
+    {
+      "id": "upper_2024-12-19_0245",
+      "imagePath": "images/upper_2024-12-19_0245.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "vildsvin", "count": 4 }
+        ],
+        "notes": "Four wildboars — sugga on right (no visible eyes) plus 3 kultingar. Count-trap: model might miss the sow."
+      },
+      "tags": ["upper", "night-ir", "multi-animal"]
+    }
+  ]
+}

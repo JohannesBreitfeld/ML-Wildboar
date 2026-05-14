@@ -1,0 +1,132 @@
+{
+  "version": "1.0",
+  "name": "lower",
+  "items": [
+    {
+      "id": "lower_2024-10-15_0328",
+      "imagePath": "images/lower_2024-10-15_0328.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "vildsvin", "count": 2 }
+        ],
+        "notes": "Two wildboars feeding at pole base, rear-on. Night IR."
+      },
+      "tags": ["lower", "night-ir", "multi-animal"]
+    },
+    {
+      "id": "lower_2024-12-03_2339",
+      "imagePath": "images/lower_2024-12-03_2339.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "vildsvin", "count": 1 }
+        ],
+        "notes": "Single wildboar very close to camera, fur fills lower frame. Night IR."
+      },
+      "tags": ["lower", "night-ir", "close-up"]
+    },
+    {
+      "id": "lower_2024-12-19_0425",
+      "imagePath": "images/lower_2024-12-19_0425.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "vildsvin", "count": 4 }
+        ],
+        "notes": "Four wildboars around pole base, including light-coloured piglet. Night IR."
+      },
+      "tags": ["lower", "night-ir", "multi-animal", "eye-shine"]
+    },
+    {
+      "id": "lower_2026-04-19_0312",
+      "imagePath": "images/lower_2026-04-19_0312.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "One badger right of pole. Easy to mistake for wildboar in IR — classic FP-trap."
+      },
+      "tags": ["lower", "night-ir", "fp-trap"]
+    },
+    {
+      "id": "lower_2026-04-26_0300",
+      "imagePath": "images/lower_2026-04-26_0300.jpg",
+      "expected": {
+        "isEmpty": true,
+        "detections": [],
+        "notes": "Empty scene with rocks at pole base. FP-trap — Claude has historically misread these as resting wildboars."
+      },
+      "tags": ["lower", "night-ir", "empty", "fp-trap"]
+    },
+    {
+      "id": "lower_2026-04-28_2344",
+      "imagePath": "images/lower_2026-04-28_2344.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "Badger directly in front of pole — visible eye and motion. Easy to miss."
+      },
+      "tags": ["lower", "night-ir", "eye-shine", "fn-trap"]
+    },
+    {
+      "id": "lower_2026-04-30_0241",
+      "imagePath": "images/lower_2026-04-30_0241.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "räv", "count": 1 }
+        ],
+        "notes": "Fox on left with clear eye-shine and tail. Night IR."
+      },
+      "tags": ["lower", "night-ir", "eye-shine"]
+    },
+    {
+      "id": "lower_2026-05-03_0433",
+      "imagePath": "images/lower_2026-05-03_0433.jpg",
+      "expected": {
+        "isEmpty": true,
+        "detections": [],
+        "notes": "Empty rocks-and-pole scene. FP-trap."
+      },
+      "tags": ["lower", "night-ir", "empty", "fp-trap"]
+    },
+    {
+      "id": "lower_2026-05-03_2103",
+      "imagePath": "images/lower_2026-05-03_2103.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "Badger next to pole at dusk. Easy to mistake for wildboar."
+      },
+      "tags": ["lower", "dusk", "fp-trap"]
+    },
+    {
+      "id": "lower_2026-05-06_1908",
+      "imagePath": "images/lower_2026-05-06_1908.jpg",
+      "expected": {
+        "isEmpty": true,
+        "detections": [],
+        "notes": "Daylight colour image, empty rocks-and-pole scene."
+      },
+      "tags": ["lower", "daylight", "empty"]
+    },
+    {
+      "id": "lower_2026-05-11_0339",
+      "imagePath": "images/lower_2026-05-11_0339.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "vildsvin", "count": 1 }
+        ],
+        "notes": "Wildboar in upper-left corner. Partially obscured, easy FN."
+      },
+      "tags": ["lower", "night-ir", "fn-trap", "hard"]
+    }
+  ]
+}

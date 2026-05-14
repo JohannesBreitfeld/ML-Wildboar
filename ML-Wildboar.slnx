@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Evals/">
+    <Project Path="Evals/ML-Wildboar.PromptEval/ML-Wildboar.PromptEval.csproj" />
+  </Folder>
   <Folder Name="/Functions/">
     <Project Path="Functions/ML-Wildboar.ImageIngest/ML-Wildboar.ImageIngest.csproj" />
   </Folder>

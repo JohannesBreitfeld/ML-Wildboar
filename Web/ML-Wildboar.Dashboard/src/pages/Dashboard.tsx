@@ -79,6 +79,7 @@ export function Dashboard() {
   const [range, setRange] = useState<DateRange>(defaultRange);
   const [speciesFilter, setSpeciesFilter] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
   const speciesParam = speciesFilter.length > 0 ? speciesFilter.join(',') : undefined;
 
@@ -88,14 +89,14 @@ export function Dashboard() {
     species: speciesParam,
   });
 
-  // Recent images with animals
-  const { data: recentData } = useImageGallery({
-    from: range.from,
-    to: range.to,
-    species: speciesParam,
-    withAnimals: true,
-    pageSize: 8,
-  });
+  // Recent images. In "show all" mode we drop the species + withAnimals filters
+  // so empties are returned too — useful for spotting images Claude marked empty
+  // that actually contain animals (false negatives).
+  const { data: recentData } = useImageGallery(
+    showAll
+      ? { from: range.from, to: range.to, pageSize: 200 }
+      : { from: range.from, to: range.to, species: speciesParam, withAnimals: true, pageSize: 8 },
+  );
 
   // Drilldown images for selected day
   const { data: drilldownData } = useImageGallery(
@@ -266,15 +267,19 @@ export function Dashboard() {
       <Card>
         <CardHeader
           title="Senaste händelser"
-          subtitle={`${recentData?.totalCount ?? 0} bilder med djur i nuvarande val`}
+          subtitle={showAll
+            ? `${recentData?.totalCount ?? 0} bilder totalt i perioden (inkl. tomma, ignorerar artfilter)`
+            : `${recentData?.totalCount ?? 0} bilder med djur i nuvarande val`}
           right={
-            <button style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '7px 14px', fontSize: 13, fontWeight: 500,
-              border: '1px solid var(--border)', background: 'var(--surface)',
-              color: 'var(--text-2)', borderRadius: 999,
-            }}>
-              Visa alla →
+            <button
+              onClick={() => setShowAll(s => !s)}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '7px 14px', fontSize: 13, fontWeight: 500,
+                border: '1px solid var(--border)', background: 'var(--surface)',
+                color: 'var(--text-2)', borderRadius: 999, cursor: 'pointer',
+              }}>
+              {showAll ? '← Visa färre' : 'Visa alla →'}
             </button>
           }
         />
@@ -282,7 +287,7 @@ export function Dashboard() {
           <ImageGallery images={recentData.images} minThumbnailWidth={200} />
         ) : (
           <div style={{ color: 'var(--text-3)', fontSize: 13, padding: '24px 0', textAlign: 'center' }}>
-            Inga bilder med djur i nuvarande val
+            {showAll ? 'Inga bilder i perioden' : 'Inga bilder med djur i nuvarande val'}
           </div>
         )}
       </Card>

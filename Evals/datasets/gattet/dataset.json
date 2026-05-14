@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "name": "gattet",
+  "items": [
+    {
+      "id": "gattet_2026-05-09_2112",
+      "imagePath": "images/gattet_2026-05-09_2112.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "räv", "count": 1 }
+        ],
+        "notes": "Fox in middle of meadow at dusk. Hunter-brand camera."
+      },
+      "tags": ["gattet", "dusk"]
+    },
+    {
+      "id": "gattet_2026-05-12_0845",
+      "imagePath": "images/gattet_2026-05-12_0845.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "rådjur", "count": 1 }
+        ],
+        "notes": "Roe deer in grass near treeline. Daylight."
+      },
+      "tags": ["gattet", "daylight"]
+    }
+  ]
+}
