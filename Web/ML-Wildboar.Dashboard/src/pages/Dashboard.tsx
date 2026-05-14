@@ -138,16 +138,6 @@ export function Dashboard() {
     );
   }
 
-  // Prepare chart data
-  const dailyData = data
-    ? processDetectionDataByDay(
-        data.detections,
-        new Map(Object.entries(data.totalImagesByDay))
-      )
-    : [];
-
-  const hourlyData = data ? processDetectionDataByHour(data.detections) : [];
-
   return (
     <main style={{ maxWidth: 1500, margin: '0 auto', padding: '28px', display: 'flex', flexDirection: 'column', gap: 'var(--gap)' }}>
 
