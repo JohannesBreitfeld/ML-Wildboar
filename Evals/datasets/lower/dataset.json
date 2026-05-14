@@ -127,6 +127,126 @@
         "notes": "Wildboar in upper-left corner. Partially obscured, easy FN."
       },
       "tags": ["lower", "night-ir", "fn-trap", "hard"]
+    },
+    {
+      "id": "lower_2024-10-12_2237",
+      "imagePath": "images/lower_2024-10-12_2237.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "vildsvin", "count": 1 }
+        ],
+        "notes": "Single wildboar standing right of pole base. Night IR."
+      },
+      "tags": ["lower", "night-ir"]
+    },
+    {
+      "id": "lower_2024-10-13_0155",
+      "imagePath": "images/lower_2024-10-13_0155.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "vildsvin", "count": 1 }
+        ],
+        "notes": "Single bedded wildboar on right side of frame. Classic vilande_vildsvin case — easy to misread the contour as rocks."
+      },
+      "tags": ["lower", "night-ir", "resting-pose", "hard", "fp-trap"]
+    },
+    {
+      "id": "lower_2025-03-23_0239",
+      "imagePath": "images/lower_2025-03-23_0239.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "vildsvin", "count": 1 }
+        ],
+        "notes": "Single wildboar on right edge with visible eye-shine. Only the eye and partial body give it away."
+      },
+      "tags": ["lower", "night-ir", "eye-shine", "hard"]
+    },
+    {
+      "id": "lower_2025-03-27_0337",
+      "imagePath": "images/lower_2025-03-27_0337.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "vildsvin", "count": 2 }
+        ],
+        "notes": "Two wildboars: clear silhouette on left, plus a light-coloured boar behind pole facing camera with one eye visible."
+      },
+      "tags": ["lower", "night-ir", "multi-animal", "eye-shine"]
+    },
+    {
+      "id": "lower_2026-04-16_2321",
+      "imagePath": "images/lower_2026-04-16_2321.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "Single badger at pole base. Characteristic light low body in IR."
+      },
+      "tags": ["lower", "night-ir"]
+    },
+    {
+      "id": "lower_2026-04-19_2126",
+      "imagePath": "images/lower_2026-04-19_2126.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "Motion-blurred badger crossing frame. Body shape and proportions visible but no clear face stripe."
+      },
+      "tags": ["lower", "night-ir", "motion-blur", "hard"]
+    },
+    {
+      "id": "lower_2026-04-23_2252",
+      "imagePath": "images/lower_2026-04-23_2252.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "Another motion-blurred badger crossing the lit area."
+      },
+      "tags": ["lower", "night-ir", "motion-blur"]
+    },
+    {
+      "id": "lower_2026-05-04_0328",
+      "imagePath": "images/lower_2026-05-04_0328.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "vildsvin", "count": 1 }
+        ],
+        "notes": "Wildboar entering from right edge — only head and neck visible, eye and head-form discernible. Very partial view."
+      },
+      "tags": ["lower", "night-ir", "partial", "hard", "fn-trap"]
+    },
+    {
+      "id": "lower_2026-05-12_0117",
+      "imagePath": "images/lower_2026-05-12_0117.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "vildsvin", "count": 1 }
+        ],
+        "notes": "Wildboar silhouette in upper-left corner, outside the IR cone but covering part of a tree. Dim eye reflection still visible."
+      },
+      "tags": ["lower", "night-ir", "hard", "fn-trap"]
+    },
+    {
+      "id": "lower_2026-05-12_2110",
+      "imagePath": "images/lower_2026-05-12_2110.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "Badger left-of-centre, mid-height in frame. Head hidden behind a stone — only body visible. Daylight scene."
+      },
+      "tags": ["lower", "daylight", "hard"]
     }
   ]
 }
