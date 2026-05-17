@@ -25,6 +25,76 @@
         "notes": "Roe deer in grass near treeline. Daylight."
       },
       "tags": ["gattet", "daylight"]
+    },
+    {
+      "id": "gattet_2026-05-10_2233",
+      "imagePath": "images/gattet_2026-05-10_2233.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "Badger mid-frame in IR. User flagged: gattet badgers are a production problem area — they get marked as wildboar. Open meadow scene removes the feeding-pole context cue."
+      },
+      "tags": ["gattet", "night-ir", "grävling", "hard", "boar-vs-badger"]
+    },
+    {
+      "id": "gattet_2026-05-11_2311",
+      "imagePath": "images/gattet_2026-05-11_2311.jpg",
+      "expected": {
+        "isEmpty": true,
+        "detections": [],
+        "notes": "Empty meadow at night, IR. Just grass and trees."
+      },
+      "tags": ["gattet", "night-ir", "empty"]
+    },
+    {
+      "id": "gattet_2026-05-13_0359",
+      "imagePath": "images/gattet_2026-05-13_0359.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "räv", "count": 1 }
+        ],
+        "notes": "Fox moving across meadow in IR — full animal visible roughly mid-frame. Faint due to IR-light fall-off."
+      },
+      "tags": ["gattet", "night-ir", "räv", "hard"]
+    },
+    {
+      "id": "gattet_2026-05-13_2124",
+      "imagePath": "images/gattet_2026-05-13_2124.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "Badger in grass at dusk (colour image). Compact dark body — production prompt reads as wildboar (gattet-badger problem area)."
+      },
+      "tags": ["gattet", "dusk", "grävling", "hard", "boar-vs-badger"]
+    },
+    {
+      "id": "gattet_2026-05-13_2353_a",
+      "imagePath": "images/gattet_2026-05-13_2353_a.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "Badger left side of frame, curved back visible above grass. Sequence frame A — paired with _b one second later."
+      },
+      "tags": ["gattet", "night-ir", "grävling", "hard", "boar-vs-badger", "sequence"]
+    },
+    {
+      "id": "gattet_2026-05-13_2353_b",
+      "imagePath": "images/gattet_2026-05-13_2353_b.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "Same badger as _a, one second later — rump/tail more visible as the animal turns. Sequence frame B."
+      },
+      "tags": ["gattet", "night-ir", "grävling", "hard", "boar-vs-badger", "sequence"]
     }
   ]
 }

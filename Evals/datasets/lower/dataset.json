@@ -247,6 +247,102 @@
         "notes": "Badger left-of-centre, mid-height in frame. Head hidden behind a stone — only body visible. Daylight scene."
       },
       "tags": ["lower", "daylight", "hard"]
+    },
+    {
+      "id": "lower_2026-04-21_0108",
+      "imagePath": "images/lower_2026-04-21_0108.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "räv", "count": 1 }
+        ],
+        "notes": "Fox at left edge — only silhouette and tail visible, head out of frame. Easy to miss; production reads as empty rocky scene."
+      },
+      "tags": ["lower", "night-ir", "hard", "fn-trap", "edge-of-frame", "räv"]
+    },
+    {
+      "id": "lower_2026-04-25_0141",
+      "imagePath": "images/lower_2026-04-25_0141.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "Badger in lower-left, motion-blurred. Face stripe visible despite blur."
+      },
+      "tags": ["lower", "night-ir", "grävling", "motion-blur"]
+    },
+    {
+      "id": "lower_2026-05-10_0521",
+      "imagePath": "images/lower_2026-05-10_0521.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "fågel", "count": 1 }
+        ],
+        "notes": "Wood pigeon centred in lower frame, daylight greyscale. Rocks at pole base visible — three-rocks FP-trap with a real (non-boar) animal present."
+      },
+      "tags": ["lower", "daylight", "fågel", "rocks-plus-animal", "three-rocks"]
+    },
+    {
+      "id": "lower_2026-05-10_2317",
+      "imagePath": "images/lower_2026-05-10_2317.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "Badger at base of pole, elongated low-profile pose. Easily misread as a resting wildboar (vilande_vildsvin anti-pattern)."
+      },
+      "tags": ["lower", "night-ir", "grävling", "hard", "boar-vs-badger"]
+    },
+    {
+      "id": "lower_2026-05-10_2321",
+      "imagePath": "images/lower_2026-05-10_2321.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "One badger to the left of the pole. Other dark shapes near the pole are soil/roots, not a second animal."
+      },
+      "tags": ["lower", "night-ir", "grävling"]
+    },
+    {
+      "id": "lower_2026-05-10_2326",
+      "imagePath": "images/lower_2026-05-10_2326.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "grävling", "count": 1 }
+        ],
+        "notes": "Badger right of pole base. Compact rounded form — production prompt likely misreads as resting wildboar."
+      },
+      "tags": ["lower", "night-ir", "grävling", "hard", "boar-vs-badger"]
+    },
+    {
+      "id": "lower_2026-05-12_0231",
+      "imagePath": "images/lower_2026-05-12_0231.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "räv", "count": 1 }
+        ],
+        "notes": "One fox directly in front of pole base. Production prompt has hallucinated multiple wildboars here — exactly the boar-pattern-overcommit at pole base."
+      },
+      "tags": ["lower", "night-ir", "räv", "hard", "boar-vs-fox", "fp-trap"]
+    },
+    {
+      "id": "lower_2026-05-14_0520",
+      "imagePath": "images/lower_2026-05-14_0520.jpg",
+      "expected": {
+        "isEmpty": false,
+        "detections": [
+          { "species": "fågel", "count": 1 }
+        ],
+        "notes": "Wood pigeon sitting on the right-hand rock. Daylight three-rocks scene — the recurring production hallucination (rocks → wildboars) target. Pigeon is small and often missed even when boars aren't fabricated."
+      },
+      "tags": ["lower", "daylight", "fågel", "rocks-plus-animal", "three-rocks", "hard"]
     }
   ]
 }
