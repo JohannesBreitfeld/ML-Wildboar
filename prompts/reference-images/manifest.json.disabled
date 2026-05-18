@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "items": [
+    {
+      "id": "ref_rocks",
+      "imagePath": "ref-rocks-empty.jpg",
+      "caption": "REFERENSBILD 1 — TOMA STENAR vid lower-kameran (BURREL). Detta är de TYPISKA stenarna och bökade jordhögarna vid foderstolpens bas — flera kompakta mörka rundade former, inga ögonreflexer, inga utstickande ben/huvud, ingen asymmetrisk biologisk kontur. När målbilden visar liknande mörka former vid stolpbasen UTAN ögonreflex, utstickande tryne, synliga ben eller rörelseoskärpa → det är stenar, inte vildsvin. Kompakt mörk form vid rocks-line + 'priors pekar mot vildsvin' är fabrikation."
+    },
+    {
+      "id": "ref_vildsvin",
+      "imagePath": "ref-vildsvin-clear.jpg",
+      "caption": "REFERENSBILD 2 — KLARA VILDSVIN vid lower-kameran. Notera tre saker: (1) kroppens STORLEK relativt foderstolpen och stenarna — rygglinjen når klart UPP TILL/ÖVER stenradens nivå. (2) Mörk uniform päls med synlig asymmetrisk kontur (utstickande huvud, rygg, ben). (3) Ögonreflex där huvud är riktat mot kameran. När målbilden visar en STOR mörk form vid eller över stenradens nivå MED ögonreflex eller utstickande huvud/ben — det är vildsvin, även om skulderpuckeln inte är direkt urskiljbar (partiell vy, bakifrån, eller utanför IR-konen). Defaulting till grävling på 'låg bred kropp' när formen är stor som denna referens är fel."
+    },
+    {
+      "id": "ref_gravling",
+      "imagePath": "ref-gravling-clear.jpg",
+      "caption": "REFERENSBILD 3 — KLAR GRÄVLING vid lower-kameran. Notera: (1) ansiktsstreck synligt på huvudet (mörk ögonmask flankerad av ljusa stripor). (2) Kroppens rygglinje STANNAR UNDER stenradens överkant — grävlingen är klart MINDRE än vildsvinet i referensbild 2. (3) Ingen skulderpuckel. När målbilden visar en kompakt mörk form på denna STORLEK (under stenraden) med ansiktsstreck eller bökande pose vid foderstation → grävling. Att skriva 'skulderpuckel synlig' på en form av denna storlek är fabrikation — denna form har INGEN skulderpuckel."
+    }
+  ]
+}

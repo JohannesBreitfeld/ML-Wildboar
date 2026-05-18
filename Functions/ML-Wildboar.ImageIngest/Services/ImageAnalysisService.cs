@@ -16,6 +16,7 @@ public class ImageAnalysisService : IImageAnalysisService
     private readonly AnthropicClient _client;
     private readonly ILogger<ImageAnalysisService> _logger;
     private readonly string _systemPrompt;
+    private readonly IReadOnlyList<ReferenceImage> _referenceImages;
 
     public ImageAnalysisService(
         IOptions<AnthropicSettings> settings,
@@ -34,6 +35,11 @@ public class ImageAnalysisService : IImageAnalysisService
             _logger.LogError(ex, "Failed to load system prompt from {path}. Letting the exception propagate so the queue message is requeued for retry.", promptPath);
             throw;
         }
+
+        _referenceImages = ReferenceImageLoader.Load(AppContext.BaseDirectory);
+        if (_referenceImages.Count > 0)
+            _logger.LogInformation("Loaded {count} reference image(s): {ids}",
+                _referenceImages.Count, string.Join(", ", _referenceImages.Select(r => r.Id)));
     }
 
     public async Task<ImageAnalysisResult> AnalyzeAsync(byte[] imageData)
@@ -58,6 +64,25 @@ public class ImageAnalysisService : IImageAnalysisService
 
     private async Task<ImageAnalysisResult> CallClaudeAsync(string base64Image)
     {
+        var content = new List<ContentBlockParam>();
+        for (int i = 0; i < _referenceImages.Count; i++)
+        {
+            var r = _referenceImages[i];
+            content.Add(new ImageBlockParam
+            {
+                Source = new Base64ImageSource { MediaType = "image/jpeg", Data = Convert.ToBase64String(r.Bytes) }
+            });
+            // Cache breakpoint on the last reference caption so the reference prelude is reused across calls.
+            content.Add(i == _referenceImages.Count - 1
+                ? new TextBlockParam { Text = r.Caption, CacheControl = new CacheControlEphemeral() }
+                : new TextBlockParam { Text = r.Caption });
+        }
+        content.Add(new ImageBlockParam
+        {
+            Source = new Base64ImageSource { MediaType = "image/jpeg", Data = base64Image }
+        });
+        content.Add(new TextBlockParam { Text = "Analysera denna bild från en viltkamera." });
+
         var response = await _client.Messages.Create(new MessageCreateParams
         {
             Model = Model.ClaudeSonnet4_6,
@@ -70,25 +95,7 @@ public class ImageAnalysisService : IImageAnalysisService
                     CacheControl = new CacheControlEphemeral()
                 }
             },
-            Messages =
-            [
-                new MessageParam
-                {
-                    Role = Role.User,
-                    Content = new List<ContentBlockParam>
-                    {
-                        new ImageBlockParam
-                        {
-                            Source = new Base64ImageSource
-                            {
-                                MediaType = "image/jpeg",
-                                Data = base64Image
-                            }
-                        },
-                        new TextBlockParam { Text = "Analysera denna bild från en viltkamera." }
-                    }
-                }
-            ]
+            Messages = [new MessageParam { Role = Role.User, Content = content }]
         });
 
         _logger.LogInformation(

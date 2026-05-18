@@ -33,6 +33,9 @@
     <Content Include="..\..\prompts\production.md" Link="prompts\production.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\prompts\reference-images\**\*.*" Link="prompts\reference-images\%(RecursiveDir)%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

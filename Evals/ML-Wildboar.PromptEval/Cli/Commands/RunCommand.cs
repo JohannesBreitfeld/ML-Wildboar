@@ -34,7 +34,11 @@ internal sealed class RunCommand(string repoRoot)
         Console.WriteLine($"  Dataset: {dataset.Manifest.Name} ({dataset.Manifest.Items.Count} items)");
         Console.WriteLine();
 
-        var runner = new PromptRunner(apiKey);
+        var refs = ReferenceImageLoader.Load(Path.Combine(repoRoot, "prompts"));
+        if (refs.Count > 0)
+            Console.WriteLine($"  References: {refs.Count} image(s) — {string.Join(", ", refs.Select(r => r.Id))}");
+
+        var runner = new PromptRunner(apiKey, refs);
         var startedAt = DateTimeOffset.UtcNow;
         var results = new List<ImageRunResult>();
 

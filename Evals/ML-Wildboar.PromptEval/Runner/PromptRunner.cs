@@ -11,12 +11,19 @@ namespace ML_Wildboar.PromptEval.Runner;
 // same JSON-strip logic. Differs only in:
 //   - prompt comes from a file (any version), not the hard-coded production one
 //   - retry policy is simpler (one attempt + one retry on rate-limit) for faster eval iteration
-internal sealed class PromptRunner(string apiKey)
+internal sealed class PromptRunner
 {
     private const string ImageMediaType = "image/jpeg";
     private const string UserText = "Analysera denna bild från en viltkamera.";
 
-    private readonly AnthropicClient _client = new() { ApiKey = apiKey };
+    private readonly AnthropicClient _client;
+    private readonly IReadOnlyList<ReferenceImage> _referenceImages;
+
+    public PromptRunner(string apiKey, IReadOnlyList<ReferenceImage> referenceImages)
+    {
+        _client = new AnthropicClient { ApiKey = apiKey };
+        _referenceImages = referenceImages;
+    }
 
     public async Task<(AnalysisOutput Output, TokenUsage Usage)> AnalyzeAsync(
         string systemPrompt, byte[] imageBytes, CancellationToken ct = default)
@@ -39,6 +46,25 @@ internal sealed class PromptRunner(string apiKey)
 
     private async Task<(AnalysisOutput, TokenUsage)> CallOnceAsync(string systemPrompt, string base64Image)
     {
+        var content = new List<ContentBlockParam>();
+        for (int i = 0; i < _referenceImages.Count; i++)
+        {
+            var r = _referenceImages[i];
+            content.Add(new ImageBlockParam
+            {
+                Source = new Base64ImageSource { MediaType = ImageMediaType, Data = Convert.ToBase64String(r.Bytes) }
+            });
+            // Cache breakpoint on the last reference caption so the whole reference prelude is reused across calls.
+            content.Add(i == _referenceImages.Count - 1
+                ? new TextBlockParam { Text = r.Caption, CacheControl = new CacheControlEphemeral() }
+                : new TextBlockParam { Text = r.Caption });
+        }
+        content.Add(new ImageBlockParam
+        {
+            Source = new Base64ImageSource { MediaType = ImageMediaType, Data = base64Image }
+        });
+        content.Add(new TextBlockParam { Text = UserText });
+
         var response = await _client.Messages.Create(new MessageCreateParams
         {
             Model = Model.ClaudeSonnet4_6,
@@ -47,25 +73,7 @@ internal sealed class PromptRunner(string apiKey)
             {
                 new() { Text = systemPrompt, CacheControl = new CacheControlEphemeral() }
             },
-            Messages =
-            [
-                new MessageParam
-                {
-                    Role = Role.User,
-                    Content = new List<ContentBlockParam>
-                    {
-                        new ImageBlockParam
-                        {
-                            Source = new Base64ImageSource
-                            {
-                                MediaType = ImageMediaType,
-                                Data = base64Image
-                            }
-                        },
-                        new TextBlockParam { Text = UserText }
-                    }
-                }
-            ]
+            Messages = [new MessageParam { Role = Role.User, Content = content }]
         });
 
         var usage = new TokenUsage(
