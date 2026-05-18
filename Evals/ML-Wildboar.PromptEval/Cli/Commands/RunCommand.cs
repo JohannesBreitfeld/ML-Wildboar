@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Anthropic.Models.Messages;
 using ML_Wildboar.PromptEval.Data;
 using ML_Wildboar.PromptEval.Evaluation;
 using ML_Wildboar.PromptEval.Evaluation.Models;
@@ -14,6 +15,14 @@ internal sealed class RunCommand(string repoRoot)
         var promptName = CliArgs.RequireFlag(args, "--prompt");
         var datasetName = CliArgs.RequireFlag(args, "--dataset");
         var label = CliArgs.Flag(args, "--label");
+        var modelArg = CliArgs.Flag(args, "--model") ?? "sonnet";
+        var model = modelArg.ToLowerInvariant() switch
+        {
+            "sonnet" or "sonnet-4-6" => Model.ClaudeSonnet4_6,
+            "opus" or "opus-4-7" => Model.ClaudeOpus4_7,
+            "haiku" or "haiku-4-5" => Model.ClaudeHaiku4_5,
+            _ => throw new ArgumentException($"Unknown --model value: {modelArg}. Use sonnet, opus, or haiku.")
+        };
         var apiKey = CliArgs.Flag(args, "--api-key")
                      ?? Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY")
                      ?? throw new ArgumentException("Missing API key. Set ANTHROPIC_API_KEY or pass --api-key.");
@@ -31,6 +40,7 @@ internal sealed class RunCommand(string repoRoot)
 
         Console.WriteLine($"Run: {runId}");
         Console.WriteLine($"  Prompt:  {promptPath}");
+        Console.WriteLine($"  Model:   {modelArg} ({model})");
         Console.WriteLine($"  Dataset: {dataset.Manifest.Name} ({dataset.Manifest.Items.Count} items)");
         Console.WriteLine();
 
@@ -38,7 +48,7 @@ internal sealed class RunCommand(string repoRoot)
         if (refs.Count > 0)
             Console.WriteLine($"  References: {refs.Count} image(s) — {string.Join(", ", refs.Select(r => r.Id))}");
 
-        var runner = new PromptRunner(apiKey, refs);
+        var runner = new PromptRunner(apiKey, refs, model);
         var startedAt = DateTimeOffset.UtcNow;
         var results = new List<ImageRunResult>();
 

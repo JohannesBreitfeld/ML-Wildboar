@@ -18,11 +18,13 @@ internal sealed class PromptRunner
 
     private readonly AnthropicClient _client;
     private readonly IReadOnlyList<ReferenceImage> _referenceImages;
+    private readonly Model _model;
 
-    public PromptRunner(string apiKey, IReadOnlyList<ReferenceImage> referenceImages)
+    public PromptRunner(string apiKey, IReadOnlyList<ReferenceImage> referenceImages, Model model)
     {
         _client = new AnthropicClient { ApiKey = apiKey };
         _referenceImages = referenceImages;
+        _model = model;
     }
 
     public async Task<(AnalysisOutput Output, TokenUsage Usage)> AnalyzeAsync(
@@ -67,7 +69,7 @@ internal sealed class PromptRunner
 
         var response = await _client.Messages.Create(new MessageCreateParams
         {
-            Model = Model.ClaudeSonnet4_6,
+            Model = _model,
             MaxTokens = 1024,
             System = new List<TextBlockParam>
             {
